@@ -499,9 +499,11 @@ function ss(k, v) {
   localStorage.setItem(k, v);
   if (window.electronAPI?.storeSet) window.electronAPI.storeSet(k, v).catch(()=>{});
 }
-// Hydrate localStorage from Electron store on startup
-if(window.electronAPI){
-  window.electronAPI.storeGet('').then(stored=>{
+// Hydrate localStorage from Electron store on startup (called from init)
+async function hydrateStore(){
+  if(!window.electronAPI) return;
+  try{
+    const stored = await window.electronAPI.storeGet('');
     if(!stored) return;
     for(const[k,v]of Object.entries(stored))
       if(v!==null && v!==undefined) localStorage.setItem(k, typeof v==='string'?v:JSON.stringify(v));
@@ -510,18 +512,14 @@ if(window.electronAPI){
       todos: safeGet('cl_todos', []),
       cfg: safeGet('cl_cfg', S.cfg),
       tokens: parseInt(localStorage.getItem('cl_tokens')||'0'),
-  theme: localStorage.getItem('cl_theme')||'light',
-  provKeys: safeGet('cl_provKeys', {}),
+      theme: localStorage.getItem('cl_theme')||'light',
+      provKeys: safeGet('cl_provKeys', {}),
     });
-    // Migrate old provKeys (string values) to arrays
     for(const p of Object.keys(S.provKeys)){
       if(!Array.isArray(S.provKeys[p])) S.provKeys[p]=[S.provKeys[p]];
     }
     ss('cl_provKeys', JSON.stringify(S.provKeys));
-    if(S.cfg.model) document.getElementById('mName').textContent=S.cfg.modelName||S.cfg.model;
-    renderCL();renderMsgs();renderTodos();updateUsage();updateApiBadge();
-    if(S.cfg.key) populateModelDD();
-  }).catch(e=>showError('Failed to load stored data: '+e.message));
+  }catch(e){console.warn('Store hydration failed:',e);}
 }
 
 const S = {
@@ -687,9 +685,6 @@ class APIError extends Error {
   get isRate(){return this.status===429;}
   get isRetryable(){return this.isRate||(this.status>=500&&this.status<600);}
 }
-class AuthError extends APIError { constructor(p){super('Authentication failed',{status:401,type:'auth',provider:p});this.name='AuthError';} }
-class RateLimitError extends APIError { constructor(p){super('Rate limited',{status:429,type:'rate_limit',provider:p});this.name='RateLimitError';} }
-
 // ── Model Registry ──
 const modelReg = new Map();
 const MODEL_CACHE_TTL = 300_000;
@@ -716,7 +711,7 @@ async function loadModels(force){
     const p = getProvider(pid, savedCfg);
     const live = await p.getModels();
     if(live?.length) for(const m of live) regModel({id:m.id,name:m.name,provider:pid,apiModel:m.id,contextWindow:128000,maxTokens:4096,ico:m.ico||'🔷',tag:m.tag||'',costIn:0,costOut:0,caps:{tools:true}});
-  }catch{}
+  }catch(e){console.warn('loadModels live fetch failed:',e);}
 }
 
 // ── Token Estimation & Context Mgmt ──
@@ -863,7 +858,8 @@ class OpenAIProvider extends BaseProvider {
             yield{type:'done',finish_reason:c.finish_reason,tool_calls:tc,full_content:full};
             return;
           }
-        }catch{}
+          }catch(e){console.warn('SSE parse error:',e);}
+        }
       }
     }
   }
@@ -924,7 +920,7 @@ class AnthropicProvider extends BaseProvider {
             yield{type:'done',finish_reason:d.delta.stop_reason==='end_turn'?'stop':d.delta.stop_reason,tool_calls:[],full_content:''};
             return;
           }
-        }catch{}
+        }catch(e){console.warn('Anthropic SSE parse error:',e);}
       }
     }
   }
@@ -1011,6 +1007,7 @@ function updateApiBadge(){
   }
 }
 
+function escAttr(s){return(s||'').replace(/'/g,'\\u0027').replace(/"/g,'&quot;');}
 async function populateModelDD(){
   const p = S.cfg.provider;
   let models = getModelsForProvider(p);
@@ -1021,7 +1018,7 @@ async function populateModelDD(){
     return;
   }
   document.getElementById('mDDItems').innerHTML = models.map(m=>`
-    <div class="ddi${S.cfg.model===m.id?' sel':''}" onclick="pickModel('${m.id}','${m.name}',this)">
+    <div class="ddi${S.cfg.model===m.id?' sel':''}" onclick="pickModel('${escAttr(m.id)}','${escAttr(m.name)}',this)">
       <span style="font-size:16px;">${m.ico||'🔷'}</span>
       <span style="flex:1;">${m.name}</span>
       ${m.tag?`<span class="db">${m.tag}</span>`:''}
@@ -1202,7 +1199,7 @@ async function callAPI(msgs){
       const other = lives.filter(m=>!m.id.includes(':free')&&m.tag!=='Free').map(m=>m.id);
       liveFree = [...new Set([...free, ...other])].filter(m=>m!==cfg.model).slice(0,30);
     }
-  }catch{}
+  }catch(e){console.warn('Live fallback models failed:',e);}
   const fallbackModels = liveFree.length ? liveFree : [...new Set(getModelsForProvider(cfg.provider).map(m=>m.id))].filter(m=>m!==cfg.model).slice(0,20);
   if(fallbackModels.length){
     const key = (Array.isArray(curKeys)&&curKeys.length)?curKeys[0]:cfg.key;
@@ -1537,6 +1534,7 @@ async function sendMsg(){
 // Parse and execute ```cmd/```write/```read blocks from AI text
 async function executeBlocksFromText(text){
   const results = [];
+  try{
   const cmdRe = /```cmd\n?([\s\S]*?)```/g;
   let m;
   while((m = cmdRe.exec(text)) !== null){
@@ -1558,6 +1556,7 @@ async function executeBlocksFromText(text){
     const content = await window.electronAPI.readFile(path);
     results.push({type:'read', path, result:content||'(file not found)'});
   }
+  }catch(e){results.push({type:'error',result:e.message});}
   return results;
 }
 
@@ -1617,10 +1616,12 @@ function readAloud(i){
 }
 function copyConvo(){const c=S.chats.find(x=>x.id===S.activeId);if(!c)return;const txt=c.msgs.map(m=>(m.r==='user'?'You: ':'AI: ')+m.t.replace(/<[^>]+>/g,'')).join('\n\n');if(window.electronAPI){window.electronAPI.copy(txt);toast('Copied!');}else navigator.clipboard.writeText(txt).then(()=>toast('Copied!'));}
 async function exportConvo(){
+  try{
   const c=S.chats.find(x=>x.id===S.activeId);if(!c)return;
   const content=c.msgs.map(m=>(m.r==='user'?'You: ':'AI: ')+m.t.replace(/<[^>]+>/g,'')).join('\n\n');
   if(window.electronAPI){const fp=await window.electronAPI.showSaveDialog([{name:'Text',extensions:['txt']}]);if(fp){await window.electronAPI.writeFile(fp,content);toast('Exported!');}}
   else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download=(c.title||'chat')+'.txt';a.click();toast('Exported');}
+  }catch(e){toast('Export failed: '+e.message);}
 }
 
 // ══════════════════════════════════════════
@@ -1714,7 +1715,7 @@ function renderTplPg(){
   const ts=[{e:'🐍',n:'Python Script'},{e:'⚛️',n:'React Component'},{e:'🌐',n:'REST API'},{e:'🤖',n:'AI Chatbot'},{e:'📊',n:'Data Analysis'},{e:'🐳',n:'Dockerfile'},{e:'📝',n:'README'},{e:'🧪',n:'Unit Tests'},{e:'🔐',n:'Auth Flow'},{e:'🗄️',n:'DB Schema'},{e:'🚀',n:'CI/CD Pipeline'},{e:'🔑',n:'API Client'}];
   document.getElementById('templatesPg').innerHTML=`<div class="pg-title">Templates</div><div class="pg-sub">Click to scaffold in chat.</div><div class="grid">${ts.map(t=>`<div class="card" onclick="useTpl('${t.n}')"><div class="ci2">${t.e}</div><div class="ct">${t.n}</div></div>`).join('')}</div>`;
 }
-function useTpl(n){navGo(document.querySelector('[data-p="chat"]'));document.getElementById('mi').value=`Generate a ${n} template for me`;sendMsg();}
+function useTpl(n){const safe=escAttr(n);navGo(document.querySelector('[data-p="chat"]'));document.getElementById('mi').value=`Generate a ${safe} template for me`;sendMsg();}
 
 function renderKeyGroup(p){
   const names={openrouter:'OpenRouter',openai:'OpenAI',anthropic:'Anthropic',gemini:'Gemini',groq:'Groq',ollamafreeapi:'OllamaFree'};
@@ -1770,9 +1771,11 @@ function pickFallback(){const m=prompt('Enter fallback model ID (e.g. gpt-4o-min
 function togTheme(b){b.classList.toggle('on');document.documentElement.classList.toggle('dark');S.theme=document.documentElement.classList.contains('dark')?'dark':'light';ss('cl_theme',S.theme);}
 function clearChats(){if(confirm('Delete all chats?')){S.chats=[];S.activeId=null;save();renderCL();renderMsgs();renderSettingsPg();toast('Cleared');}}
 async function exportAll(){
+  try{
   const content=JSON.stringify(S.chats,null,2);
   if(window.electronAPI){const fp=await window.electronAPI.showSaveDialog([{name:'JSON',extensions:['json']}]);if(fp){await window.electronAPI.writeFile(fp,content);toast('Exported!');}}
   else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'application/json'}));a.download='codelight_chats.json';a.click();}
+  }catch(e){toast('Export failed: '+e.message);}
 }
 
 // ══════════════════════════════════════════
@@ -1788,6 +1791,7 @@ function wMax(){if(window.electronAPI&&window.electronAPI.maximizeWindow){window
 function toggleSB(){document.getElementById('sb').classList.toggle('off');}
 function toggleFP(){document.getElementById('fp').classList.toggle('on');if(document.getElementById('fp').classList.contains('on'))renderFP();}
 async function renderFP(){
+  try{
   const el=document.getElementById('fpList');
   if(!window.electronAPI){el.innerHTML='<div style="padding:12px;font-size:12px;color:var(--t3)">File pane requires the Electron app.</div>';return;}
   const res=await window.electronAPI.listDir(S.fpPath);
@@ -1801,6 +1805,7 @@ async function renderFP(){
   });
   el.innerHTML=html;
   document.getElementById('fpPathLabel').textContent=S.fpPath||'Files';
+  }catch(e){el.innerHTML=`<div style="padding:12px;font-size:12px;color:var(--danger)">${e.message}</div>`;}
 }
 function navFP(i){
   if(i===-1) S.fpPath=S.fpData.parent;
@@ -1808,12 +1813,14 @@ function navFP(i){
   renderFP();
 }
 async function viewFP(i){
+  try{
   const e=S.fpData.entries[i];const sep=S.fpData.path.includes('\\')?'\\':'/';const fullPath=S.fpData.path+sep+e.name;
   const content=await window.electronAPI.readFile(fullPath);
   if(content===null){toast('Could not read file');return;}
   S.atts.push({name:e.name,size:e.size,path:fullPath,content});
   document.getElementById('atchList').innerHTML+=`<div class="ach">📄 ${e.name} (${content.length}B) <button onclick="rmAtch(${S.atts.length-1})">×</button></div>`;
   toast('Attached: '+e.name);
+  }catch(e){toast('Failed to read file: '+e.message);}
 }
 function toggleTodo(){document.getElementById('todoPan').classList.toggle('on');}
 function renderTodos(){document.getElementById('tList').innerHTML=S.todos.length?S.todos.map((t,i)=>`<div class="tpi"><div class="tcb${t.d?' on':''}" onclick="togTodo(${i})"></div><span class="tt${t.d?' on':''}">${t.t}</span><button class="td" onclick="delTodo(${i})"><i class="ti ti-trash"></i></button></div>`).join(''):`<div style="text-align:center;padding:20px;font-size:12px;color:var(--t3);">No tasks yet.</div>`;}
@@ -1908,17 +1915,16 @@ function searchPrev(){if(!srchMatches.length)return;
 // ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
-try{
-renderCL();
-renderMsgs();
-renderTodos();
-updateUsage();
-updateApiBadge();
-if(S.cfg.key) populateModelDD();
-if(S.cfg.model) document.getElementById('mName').textContent = S.cfg.modelName||S.cfg.model;
-document.querySelectorAll('.pg').forEach(p=>{p.style.display='none';});
-document.getElementById('chatPg').style.display='flex';
-}catch(e){showError(e.message);}
+(async function init(){
+  try{
+    await hydrateStore();
+    renderCL(); renderMsgs(); renderTodos(); updateUsage(); updateApiBadge();
+    if(S.cfg.key) populateModelDD();
+    if(S.cfg.model) document.getElementById('mName').textContent = S.cfg.modelName||S.cfg.model;
+    document.querySelectorAll('.pg').forEach(p=>{p.style.display='none';});
+    document.getElementById('chatPg').style.display='flex';
+  }catch(e){showError(e.message);}
+})();
 </script>
 </body>
 </html>
