@@ -858,8 +858,7 @@ class OpenAIProvider extends BaseProvider {
             yield{type:'done',finish_reason:c.finish_reason,tool_calls:tc,full_content:full};
             return;
           }
-          }catch(e){console.warn('SSE parse error:',e);}
-        }
+        }catch(e){console.warn('SSE parse error:',e);}
       }
     }
   }
