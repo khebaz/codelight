@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Code Light</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+:root{
+  --bg:#f0f0f6;--sb:#f7f7fb;--card:#fff;--border:#d8d8e4;
+  --t:#222;--t2:#666;--t3:#aaa;--accent:#4f46e5;--a2:#7c6fff;
+  --al:#ede9ff;--danger:#dc2626;--black:#111;
+  --sh:0 2px 12px rgba(0,0,0,.07);--r:10px;
+  --font:'Inter',system-ui,sans-serif;
+}
+.dark{
+  --bg:#0d0d12;--sb:#121218;--card:#1c1c26;--border:#2a2a3a;
+  --t:#e8e8f0;--t2:#888;--t3:#555;--al:#1e1a3a;
+  --sh:0 2px 12px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+#errBoundary{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#16162a;color:#fff;font-family:var(--font);align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:99999;}
+#errBoundary.on{display:flex;}
+body{font-family:var(--font);background:#16162a;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden;}
+/* WINDOW */
+.win{width:1120px;height:690px;background:var(--bg);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 28px 70px rgba(0,0,0,.55);transition:all .3s;}
+/* TITLEBAR */
+.tb{height:40px;background:var(--sb);border-bottom:.5px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0;user-select:none;}
+.dots{display:flex;gap:7px;}
+.dot{width:13px;height:13px;border-radius:50%;cursor:pointer;}
+.dot.cl{background:#ff5f57;}.dot.mn{background:#febc2e;}.dot.mx{background:#28c840;}
+.dot:hover{filter:brightness(.8);}
+.tb-title{flex:1;text-align:center;font-size:12.5px;font-weight:500;color:var(--t2);}
+.tb-acts{display:flex;gap:5px;}
+.tb-btn{background:none;border:.5px solid var(--border);border-radius:6px;color:var(--t2);cursor:pointer;width:27px;height:27px;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;}
+.tb-btn:hover{background:var(--al);color:var(--accent);}
+/* BODY */
+.body{display:flex;flex:1;overflow:hidden;}
+/* SIDEBAR */
+.sb{width:260px;background:var(--sb);display:flex;flex-direction:column;border-right:.5px solid var(--border);flex-shrink:0;transition:width .2s,opacity .2s;}
+.sb.off{width:0;opacity:0;overflow:hidden;}
+.logo-row{padding:14px 14px 10px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:9px;}
+.logo svg{width:32px;height:32px;flex-shrink:0;}
+.logo-txt{font-size:16px;font-weight:700;color:var(--t);letter-spacing:-.02em;}
+.logo-txt b{color:var(--accent);}
+.sb-tog{background:none;border:.5px solid var(--border);border-radius:6px;color:var(--t3);cursor:pointer;width:27px;height:27px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.sb-tog:hover{background:var(--al);color:var(--accent);}
+.new-btn{margin:0 10px 12px;background:var(--black);color:#fff;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
+.dark .new-btn{background:var(--accent);}
+.new-btn:hover{opacity:.85;}
+.nav{padding:0 6px;}
+.ni{display:flex;align-items:center;gap:11px;padding:8px 11px;border-radius:8px;color:var(--t2);cursor:pointer;font-size:13.5px;margin-bottom:1px;transition:all .15s;}
+.ni:hover{background:var(--al);color:var(--accent);}
+.ni.on{background:var(--black);color:#fff;}
+.dark .ni.on{background:var(--accent);}
+.ni i{font-size:17px;}
+.div{height:.5px;background:var(--border);margin:10px 14px;}
+.sec{padding:3px 18px 6px;font-size:10.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;}
+.cl-list{overflow-y:auto;flex:1;}
+.ci{display:flex;align-items:center;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--t2);margin:0 6px 1px;gap:8px;transition:background .15s;}
+.ci:hover{background:var(--al);}
+.ci.act{background:var(--al);color:var(--accent);}
+.ci i{font-size:15px;flex-shrink:0;}
+.ci-t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;}
+.mb{background:none;border:none;color:var(--t3);cursor:pointer;padding:3px 4px;border-radius:5px;font-size:15px;display:flex;flex-shrink:0;}
+.mb:hover{background:var(--border);color:var(--t);}
+/* SIDEBAR FOOTER */
+.sf{padding:10px;border-top:.5px solid var(--border);display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+.usage-box{background:var(--al);border-radius:8px;padding:7px 10px;}
+.ul{font-size:11px;color:var(--t2);margin-bottom:4px;display:flex;justify-content:space-between;}
+.ut{background:var(--border);border-radius:4px;height:4px;}
+.uf{background:linear-gradient(90deg,var(--accent),var(--a2));border-radius:4px;height:4px;transition:width .5s;}
+.gh-btn{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--card);color:var(--t);border:.5px solid var(--border);border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:500;cursor:pointer;width:100%;}
+.gh-btn:hover{border-color:var(--accent);color:var(--accent);}
+.coffee{display:flex;align-items:center;justify-content:center;gap:7px;background:#f97316;color:#fff;border:none;border-radius:9px;padding:9px;font-size:13px;font-weight:500;cursor:pointer;width:100%;}
+.coffee:hover{background:#ea6c0a;}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+/* HEADER */
+.mh{padding:10px 16px;border-bottom:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--sb);flex-shrink:0;}
+.mh-l{display:flex;align-items:center;gap:8px;}
+.m-btn{background:none;border:.5px solid var(--border);border-radius:6px;color:var(--t2);cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;}
+.m-btn:hover{background:var(--al);color:var(--accent);}
+.mpick{display:flex;align-items:center;gap:6px;background:var(--card);border:.5px solid var(--border);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:13px;font-weight:500;color:var(--t);transition:border-color .15s;}
+.mpick:hover{border-color:var(--accent);}
+.mpick .sp{color:var(--accent);font-size:17px;}
+.api-badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;background:var(--al);color:var(--accent);cursor:pointer;}
+.api-badge.none{background:#fee2e2;color:var(--danger);}
+.mh-r{display:flex;gap:6px;}
+.hb{background:none;border:.5px solid var(--border);border-radius:7px;color:var(--t2);cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;}
+.hb:hover{background:var(--al);color:var(--accent);}
+/* MESSAGES */
+.msgs{flex:1;overflow-y:auto;padding:20px 52px;display:flex;flex-direction:column;gap:18px;}
+.mu{align-self:flex-end;background:var(--card);border:.5px solid var(--border);border-radius:14px 14px 3px 14px;padding:11px 15px;max-width:68%;color:var(--t);box-shadow:var(--sh);}
+.mt{font-size:10.5px;color:var(--accent);text-align:right;margin-top:5px;display:flex;align-items:center;justify-content:flex-end;gap:3px;}
+.mai{display:flex;gap:12px;align-items:flex-start;}
+.ava{width:32px;height:32px;background:linear-gradient(135deg,var(--a2),var(--accent));border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.bub{flex:1;background:var(--card);border:.5px solid var(--border);border-radius:3px 14px 14px 14px;padding:12px 15px;box-shadow:var(--sh);}
+.blbl{font-size:10.5px;font-weight:600;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:6px;}
+.mtag{font-size:9.5px;background:var(--al);color:var(--accent);border-radius:4px;padding:1px 6px;text-transform:none;font-weight:500;}
+.btxt{color:var(--t);line-height:1.7;font-size:13.5px;}
+.btxt ol,.btxt ul{padding-left:18px;margin-top:7px;}
+.btxt li{margin-bottom:3px;}
+.btxt pre{background:var(--bg);border-radius:7px;padding:10px 12px;margin:8px 0;font-size:12.5px;overflow-x:auto;border:.5px solid var(--border);white-space:pre-wrap;}
+.btxt code{background:var(--bg);padding:2px 5px;border-radius:4px;font-size:12px;}
+.bacts{display:flex;align-items:center;gap:10px;margin-top:10px;padding-top:8px;border-top:.5px solid var(--border);}
+.cur{display:inline-block;width:2px;height:1em;background:var(--accent);margin-left:2px;animation:bl 1s step-end infinite;vertical-align:text-bottom;}
+@keyframes bl{50%{opacity:0;}}
+.hasm{border-left:3px solid #fbbf24;padding-left:10px;}.curm{border-left-color:#f59e0b;background:rgba(251,191,36,.08);}
+.ab{background:none;border:none;color:var(--t3);cursor:pointer;padding:4px;border-radius:5px;font-size:16px;display:flex;transition:all .15s;}
+.ab:hover{background:var(--al);color:var(--accent);}
+.ab.liked{color:#22c55e;}.ab.disliked{color:var(--danger);}
+.at{margin-left:auto;font-size:10.5px;color:var(--t3);}
+/* EXECUTION BLOCKS */
+.exec-block{margin:8px 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg);}
+.exec-head{padding:6px 10px;font-size:11.5px;font-weight:600;color:var(--t2);background:var(--card);border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:6px;}
+.exec-head i{font-size:15px;}
+.exec-out{padding:10px;font-size:12.5px;line-height:1.5;white-space:pre-wrap;word-break:break-all;color:var(--t);margin:0;max-height:300px;overflow:auto;}
+/* TYPING */
+.typ{display:flex;gap:4px;padding:6px 0;}
+.typ span{width:7px;height:7px;background:var(--a2);border-radius:50%;animation:bo 1s infinite;}
+.typ span:nth-child(2){animation-delay:.15s;}.typ span:nth-child(3){animation-delay:.3s;}
+@keyframes bo{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-6px);}}
+/* INPUT */
+.inp-area{border-top:.5px solid var(--border);padding:12px 16px;background:var(--sb);flex-shrink:0;}
+.inp-box{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;align-items:flex-end;gap:9px;transition:border-color .2s,box-shadow .2s;}
+.inp-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.09);}
+.itools{display:flex;gap:6px;align-items:center;}
+.it{background:none;border:none;color:var(--t3);cursor:pointer;font-size:17px;padding:3px;border-radius:5px;transition:all .15s;display:flex;}
+.it:hover{color:var(--accent);background:var(--al);}
+#mi{flex:1;background:none;border:none;outline:none;color:var(--t);font-size:13.5px;resize:none;min-height:22px;max-height:120px;line-height:1.5;font-family:var(--font);}
+#mi::placeholder{color:var(--t3);}
+.send{width:34px;height:34px;background:#111;border:none;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s;}
+.dark .send{background:#fff;}.send:hover{background:#333;}
+.send i{color:#fff;font-size:17px;}.dark .send i{color:#111;}
+.disc{text-align:center;font-size:11px;color:var(--t3);padding:6px 0 2px;}
+/* DROPDOWNS */
+.dd{position:fixed;background:var(--card);border:.5px solid var(--border);border-radius:11px;box-shadow:0 6px 24px rgba(0,0,0,.15);z-index:9999;min-width:200px;padding:6px 0;display:none;}
+.dd.on{display:block;}
+.ddi{display:flex;align-items:center;gap:9px;padding:9px 14px;font-size:13px;color:var(--t);cursor:pointer;transition:background .1s;}
+.ddi:hover{background:var(--al);}
+.ddi.sel{background:var(--al);color:var(--accent);font-weight:500;}
+.ddi.danger{color:var(--danger);}
+.dds{height:.5px;background:var(--border);margin:4px 0;}
+.db{font-size:10px;background:var(--al);color:var(--accent);border-radius:4px;padding:2px 6px;margin-left:auto;}
+.ddg{padding:7px 14px 3px;font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;}
+/* PAGES */
+.pg{display:none;flex:1;overflow-y:auto;padding:28px 44px;flex-direction:column;}
+.pg.on{display:flex;}
+.pg-title{font-size:20px;font-weight:600;color:var(--t);margin-bottom:5px;}
+.pg-sub{font-size:13px;color:var(--t2);margin-bottom:22px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.card{background:var(--card);border:.5px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .15s;}
+.card:hover{border-color:var(--accent);box-shadow:var(--sh);}
+.ci2{font-size:26px;margin-bottom:8px;color:var(--accent);}
+.ct{font-size:13.5px;font-weight:500;color:var(--t);margin-bottom:3px;}
+.cd{font-size:12px;color:var(--t2);line-height:1.5;}
+.xgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.xcard{background:var(--card);border:.5px solid var(--border);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px;transition:all .15s;}
+.xcard:hover{border-color:var(--accent);box-shadow:var(--sh);}
+.xch{display:flex;align-items:center;gap:10px;}
+.xlo{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.xn{font-size:14px;font-weight:600;color:var(--t);}
+.xp{font-size:11px;color:var(--t3);}
+.xd{font-size:12px;color:var(--t2);line-height:1.5;}
+.xl{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:500;}
+.xl:hover{text-decoration:underline;}
+/* SETTINGS */
+.sg{margin-bottom:24px;}
+.sgt{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+.sr{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:.5px solid var(--border);}
+.sr:last-child{border-bottom:none;}
+.sl{font-size:13.5px;color:var(--t);}
+.sd{font-size:12px;color:var(--t3);margin-top:2px;}
+.sa button{background:var(--card);border:.5px solid var(--border);border-radius:7px;color:var(--t);padding:6px 14px;font-size:12.5px;cursor:pointer;}
+.sa button:hover{border-color:var(--accent);color:var(--accent);}
+.tog{width:38px;height:22px;background:var(--border);border-radius:11px;cursor:pointer;position:relative;transition:background .2s;border:none;}
+.tog.on{background:var(--accent);}
+.tog::after{content:'';width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tog.on::after{left:19px;}
+/* MODALS */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;display:none;align-items:center;justify-content:center;}
+.ov.on{display:flex;}
+.mo{background:var(--card);border:.5px solid var(--border);border-radius:14px;padding:24px;width:480px;box-shadow:0 14px 48px rgba(0,0,0,.25);position:relative;max-height:85vh;overflow-y:auto;}
+.mo-t{font-size:16px;font-weight:600;color:var(--t);margin-bottom:5px;}
+.mo-s{font-size:13px;color:var(--t2);margin-bottom:18px;}
+.mo-x{position:absolute;top:14px;right:14px;background:none;border:none;font-size:20px;color:var(--t3);cursor:pointer;}
+.at-row{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.at-tab{padding:7px 14px;border-radius:7px;border:.5px solid var(--border);font-size:13px;cursor:pointer;color:var(--t2);background:none;transition:all .15s;}
+.at-tab.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.af{margin-bottom:12px;}
+.af label{display:block;font-size:12px;font-weight:500;color:var(--t2);margin-bottom:5px;}
+.af input,.af select{width:100%;background:var(--bg);border:.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;color:var(--t);outline:none;font-family:var(--font);transition:border-color .15s;}
+.af input:focus,.af select:focus{border-color:var(--accent);}
+.mk-inp{width:100%;background:var(--bg);border:.5px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--t);outline:none;font-family:var(--font);transition:border-color .15s;box-sizing:border-box;}
+.mk-inp:focus{border-color:var(--accent);}
+.mo-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
+.bp{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:500;cursor:pointer;}
+.bp:hover{opacity:.85;}
+.bs{background:none;color:var(--t2);border:.5px solid var(--border);border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer;}
+/* PROVIDER CARDS */
+.prov-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px;}
+.prov-card{background:var(--bg);border:.5px solid var(--border);border-radius:9px;padding:12px;cursor:pointer;transition:all .15s;text-align:center;}
+.prov-card:hover{border-color:var(--accent);}
+.prov-card.sel{border-color:var(--accent);background:var(--al);}
+.prov-card .pe{font-size:24px;margin-bottom:4px;}
+.prov-card .pn{font-size:12px;font-weight:600;color:var(--t);}
+.prov-card .pd{font-size:10.5px;color:var(--t3);}
+/* MODELS TABLE */
+.mods-section{background:var(--bg);border-radius:9px;padding:12px;margin-bottom:12px;border:.5px solid var(--border);}
+.mods-title{font-size:12px;font-weight:600;color:var(--t);margin-bottom:8px;}
+.mods-list{display:flex;flex-direction:column;gap:4px;}
+.mod-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer;transition:background .1s;}
+.mod-row:hover{background:var(--al);}
+.mod-row.sel{background:var(--al);}
+.mod-ico{font-size:16px;width:24px;text-align:center;}
+.mod-name{flex:1;font-size:13px;color:var(--t);}
+.mod-tag{font-size:10px;background:var(--al);color:var(--accent);border-radius:4px;padding:1px 6px;}
+.mod-radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);margin-left:auto;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.mod-radio.on{border-color:var(--accent);background:var(--accent);}
+.mod-radio.on::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%;}
+/* ATTACH */
+.atch-list{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0 2px;}
+.ach{background:var(--al);color:var(--accent);border-radius:6px;padding:3px 9px;font-size:12px;display:flex;align-items:center;gap:5px;}
+.ach button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;}
+/* TODO */
+.todo-panel{width:220px;background:var(--sb);border-left:.5px solid var(--border);display:none;flex-direction:column;flex-shrink:0;}
+.todo-panel.on{display:flex;}
+.tph{padding:12px 14px 8px;font-size:13px;font-weight:600;color:var(--t);display:flex;align-items:center;justify-content:space-between;}
+.tp-add{display:flex;gap:6px;padding:0 10px 8px;}
+.tp-add input{flex:1;background:var(--card);border:.5px solid var(--border);border-radius:7px;padding:7px 10px;font-size:12.5px;color:var(--t);outline:none;}
+.tp-add button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:7px 9px;cursor:pointer;}
+.tp-list{overflow-y:auto;flex:1;padding:0 10px;}
+.tpi{display:flex;align-items:center;gap:8px;padding:7px 6px;border-radius:7px;font-size:12.5px;color:var(--t2);}
+.tpi:hover{background:var(--al);}
+.tcb{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tcb.on{background:var(--accent);border-color:var(--accent);}
+.tcb.on::after{content:'✓';color:#fff;font-size:10px;}
+.tt{flex:1;}.tt.on{text-decoration:line-through;color:var(--t3);}
+.td{background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px;padding:2px;border-radius:4px;display:flex;}
+.td:hover{color:var(--danger);}
+/* PERM */
+.pm{background:var(--card);border:.5px solid var(--border);border-radius:12px;padding:22px;width:380px;box-shadow:0 12px 48px rgba(0,0,0,.3);}
+/* FILE PANE */
+.fp{width:0;background:var(--sb);border-right:.5px solid var(--border);overflow:hidden;flex-shrink:0;transition:width .2s;}
+.fp.on{width:190px;overflow-y:auto;}
+.fph{padding:10px 12px;font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;justify-content:space-between;}
+.fpi{display:flex;align-items:center;gap:7px;padding:6px 12px;font-size:12.5px;color:var(--t2);cursor:pointer;}
+.fpi:hover{background:var(--al);color:var(--accent);}
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#111;color:#fff;border-radius:9px;padding:9px 18px;font-size:13px;z-index:99999;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap;}
+.dark .toast{background:#e8e8f0;color:#111;}.toast.on{opacity:1;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.cmd-out{background:#0a0a14;color:#a3e635;border-radius:8px;padding:12px;font-family:monospace;font-size:12.5px;margin:8px 0;line-height:1.6;white-space:pre-wrap;}
+</style>
+</head>
+<body>
+<div id="errBoundary" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#16162a;color:#fff;font-family:system-ui,sans-serif;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:99999;">
+  <div style="font-size:48px;">⚡</div>
+  <div style="font-size:20px;font-weight:600;">Code Light encountered an error</div>
+  <div style="font-size:14px;color:#999;max-width:400px;text-align:center;" id="errMsg">Something went wrong. Please reload the app.</div>
+  <button onclick="localStorage.clear();location.reload()" style="background:#4f46e5;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;cursor:pointer;margin-top:8px;">Clear Storage & Reload</button>
+</div>
+<div class="win" id="win">
+  <!-- TITLEBAR -->
+  <div class="tb">
+    <div class="dots">
+      <div class="dot cl" onclick="wClose()"></div>
+      <div class="dot mn" onclick="wMin()"></div>
+      <div class="dot mx" onclick="wMax()"></div>
+    </div>
+    <div class="tb-title">Code Light — AI Workspace</div>
+    <div class="tb-acts">
+      <button class="tb-btn" title="GitHub" onclick="showMo('ghOv')"><i class="ti ti-brand-github"></i></button>
+      <button class="tb-btn" title="Files" onclick="toggleFP()"><i class="ti ti-folder"></i></button>
+      <button class="tb-btn" title="To-Do" onclick="toggleTodo()"><i class="ti ti-checklist"></i></button>
+    </div>
+  </div>
+
+  <div class="body">
+    <!-- FILE PANE -->
+    <div class="fp" id="fp">
+      <div class="fph"><span id="fpPathLabel">Files</span> <button class="it" onclick="perm('create file')"><i class="ti ti-plus"></i></button></div>
+      <div id="fpList"></div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sb" id="sb">
+      <div class="logo-row">
+        <div class="logo">
+          <svg viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="url(#g1)"/>
+            <defs><linearGradient id="g1" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7c6fff"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient></defs>
+            <path d="M19 5L10 18h7l-3 9 11-13h-7l2-9z" fill="white" opacity=".95"/>
+            <circle cx="9.5" cy="25" r="2.2" fill="#a5f3fc" opacity=".9"/>
+          </svg>
+          <span class="logo-txt">Code <b>Light</b></span>
+        </div>
+        <button class="sb-tog" onclick="toggleSB()"><i class="ti ti-layout-sidebar-right"></i></button>
+      </div>
+
+      <button class="new-btn" onclick="newChat()"><i class="ti ti-plus"></i> New Chat</button>
+
+      <div class="nav">
+        <div class="ni on" data-p="chat" onclick="navGo(this)"><i class="ti ti-message-circle"></i> Chat</div>
+        <div class="ni" data-p="explore" onclick="navGo(this)"><i class="ti ti-compass"></i> Explore</div>
+        <div class="ni" data-p="library" onclick="navGo(this)"><i class="ti ti-books"></i> Library</div>
+        <div class="ni" data-p="templates" onclick="navGo(this)"><i class="ti ti-layout-grid"></i> Templates</div>
+        <div class="ni" data-p="settings" onclick="navGo(this)"><i class="ti ti-settings"></i> Settings</div>
+      </div>
+
+      <div class="div"></div>
+      <div class="sec">Recent Chats</div>
+      <div class="cl-list" id="clList"></div>
+
+      <div class="sf">
+        <div class="usage-box">
+          <div class="ul"><span>Session Tokens</span><span id="uTxt">0</span></div>
+          <div class="ut"><div class="uf" id="uFill" style="width:0%"></div></div>
+        </div>
+        <button class="gh-btn" onclick="showMo('ghOv')"><i class="ti ti-brand-github"></i> Push to GitHub</button>
+        <button class="coffee" onclick="window.open('https://paypal.me/KhebazPromotions','_blank')"><i class="ti ti-coffee"></i> Buy me a coffee</button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="mh">
+        <div class="mh-l">
+          <button class="m-btn" onclick="toggleSB()"><i class="ti ti-menu-2"></i></button>
+          <div class="mpick" id="mpick" onclick="toggleMDD(event)">
+            <i class="ti ti-sparkles sp"></i>
+            <span id="mName">Select Model</span>
+            <i class="ti ti-chevron-down" style="font-size:13px;color:var(--t3);margin-left:2px;"></i>
+          </div>
+          <div class="api-badge none" id="apiBadge" onclick="showApiModal()">No API Key</div>
+        </div>
+        <div class="mh-r">
+          <button class="hb" title="Copy chat" onclick="copyConvo()"><i class="ti ti-copy"></i></button>
+          <button class="hb" title="Export chat" onclick="exportConvo()"><i class="ti ti-share"></i></button>
+          <button class="hb" title="New chat" onclick="newChat()"><i class="ti ti-edit"></i></button>
+        </div>
+      </div>
+
+      <!-- CHAT PAGE -->
+      <div id="chatPg" class="pg on" style="padding:0;overflow:hidden;">
+        <div class="msgs" id="msgs"></div>
+        <div id="srchBar" style="display:none;position:sticky;top:0;z-index:10;background:var(--sb);padding:6px 10px;border-bottom:.5px solid var(--border);align-items:center;gap:6px;font-size:13px;">
+          <i class="ti ti-search" style="color:var(--t3);font-size:14px;"></i>
+          <input id="srchInp" type="text" placeholder="Search messages…" style="flex:1;background:transparent;border:none;outline:none;color:var(--t);font-size:13px;font-family:var(--font);" oninput="searchMsgs()" onkeydown="if(event.key==='Enter')searchNext();if(event.key==='Escape')toggleSearch()">
+          <span id="srchInfo" style="color:var(--t3);font-size:12px;white-space:nowrap;"></span>
+          <button class="it" onclick="searchPrev()" title="Previous"><i class="ti ti-chevron-up"></i></button>
+          <button class="it" onclick="searchNext()" title="Next"><i class="ti ti-chevron-down"></i></button>
+          <button class="it" onclick="toggleSearch()" title="Close"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="inp-area" id="inpArea">
+          <div id="atchList"></div>
+          <div class="inp-box">
+            <div class="itools">
+              <button class="it" title="Attach" onclick="trigUp()"><i class="ti ti-paperclip"></i></button>
+              <button class="it" title="Web search" onclick="webSrch()"><i class="ti ti-world-search"></i></button>
+              <button class="it" title="Run command" onclick="runCmd()"><i class="ti ti-terminal-2"></i></button>
+            </div>
+            <textarea id="mi" rows="1" placeholder="Message Code Light…" onkeydown="hKey(event)" oninput="aResize(this)"></textarea>
+            <button class="send" onclick="sendMsg()"><i class="ti ti-send"></i></button>
+          </div>
+          <input type="file" id="fup" multiple style="display:none" onchange="hFiles(this)"/>
+          <div class="disc">Code Light may make mistakes. Review before executing commands.</div>
+        </div>
+      </div>
+      <div id="explorePg" class="pg"></div>
+      <div id="libraryPg" class="pg"></div>
+      <div id="templatesPg" class="pg"></div>
+      <div id="settingsPg" class="pg"></div>
+    </div>
+
+    <!-- TODO -->
+    <div class="todo-panel" id="todoPan">
+      <div class="tph">To-Do <button class="it" onclick="toggleTodo()"><i class="ti ti-x"></i></button></div>
+      <div class="tp-add"><input id="tIn" placeholder="Add task…" onkeydown="if(event.key==='Enter')addTodo()"/><button onclick="addTodo()"><i class="ti ti-plus"></i></button></div>
+      <div class="tp-list" id="tList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODEL DROPDOWN (populated dynamically) -->
+<div class="dd" id="mDD" style="min-width:260px;max-height:400px;overflow-y:auto;">
+  <div class="ddg">Available Models</div>
+  <div id="mDDItems"><div class="ddi" style="color:var(--t3);font-size:12px;padding:12px 14px;">Add an API key to load models</div></div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="dd" id="ctx" style="min-width:170px;">
+  <div class="ddi" onclick="ctxDo('archive')"><i class="ti ti-archive" style="color:var(--t3)"></i> Archive chat</div>
+  <div class="ddi" onclick="ctxDo('share')"><i class="ti ti-share" style="color:var(--t3)"></i> Share chat</div>
+  <div class="dds"></div>
+  <div class="ddi danger" onclick="ctxDo('delete')"><i class="ti ti-trash"></i> Delete chat</div>
+</div>
+
+<!-- API KEY MODAL -->
+<div class="ov" id="apiOv">
+  <div class="mo" style="width:520px;">
+    <button class="mo-x" onclick="hideMo('apiOv')"><i class="ti ti-x"></i></button>
+    <div class="mo-t">Configure API Key</div>
+    <div class="mo-s">Choose a provider, paste your key, and Code Light will load all available models.</div>
+    <div class="prov-grid" id="provGrid">
+      <div class="prov-card sel" onclick="selProv('openrouter',this)">
+        <div class="pe">🔀</div><div class="pn">OpenRouter</div><div class="pd">90+ models</div>
+      </div>
+      <div class="prov-card" onclick="selProv('openai',this)">
+        <div class="pe">🟢</div><div class="pn">OpenAI</div><div class="pd">GPT-4o, o1…</div>
+      </div>
+      <div class="prov-card" onclick="selProv('anthropic',this)">
+        <div class="pe">🟠</div><div class="pn">Anthropic</div><div class="pd">Claude 3.5…</div>
+      </div>
+      <div class="prov-card" onclick="selProv('custom',this)">
+        <div class="pe">⚙️</div><div class="pn">Custom</div><div class="pd">Any OpenAI-compat</div>
+      </div>
+      <div class="prov-card" onclick="selProv('pekpik',this)">
+        <div class="pe">🆓</div><div class="pn">Pekpik (Free)</div><div class="pd">Free key pool</div>
+      </div>
+      <div class="prov-card" onclick="selProv('gemini',this)">
+        <div class="pe">🔵</div><div class="pn">Gemini</div><div class="pd">Google's free tier</div>
+      </div>
+      <div class="prov-card" onclick="selProv('groq',this)">
+        <div class="pe">🔥</div><div class="pn">Groq</div><div class="pd">Ultra-fast free</div>
+      </div>
+      <div class="prov-card" onclick="selProv('keyless',this)">
+        <div class="pe">🆓</div><div class="pn">FreeTheAI</div><div class="pd">Discord free key</div>
+      </div>
+      <div class="prov-card" onclick="selProv('ollamafreeapi',this)">
+        <div class="pe">🦙</div><div class="pn">OllamaFree</div><div class="pd">Free local proxy</div>
+      </div>
+    </div>
+    <div class="af">
+      <label id="keyLabel">OpenRouter API Key</label>
+      <input id="keyInp" type="password" placeholder="sk-or-…" autocomplete="off"/>
+    </div>
+    <div class="af" id="urlRow" style="display:none;">
+      <label>Base URL</label>
+      <input id="urlInp" placeholder="https://openrouter.ai/api/v1"/>
+    </div>
+    <div style="font-size:12px;color:var(--t3);margin-top:4px;" id="keyHint">Keys are stored only in your browser's localStorage. Never sent anywhere except to the selected API.</div>
+    <div class="mo-acts">
+      <button class="bs" onclick="hideMo('apiOv')">Cancel</button>
+      <button class="bs" onclick="testConnection()" style="border-color:var(--accent);color:var(--accent);"><i class="ti ti-plug"></i> Test Key</button>
+      <button class="bp" onclick="saveKey()"><i class="ti ti-sparkles"></i> Save & Load Models</button>
+    </div>
+  </div>
+</div>
+
+<!-- PERMISSION MODAL -->
+<div class="ov" id="permOv">
+  <div class="pm">
+    <div style="width:46px;height:46px;background:#fef3c7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px;">⚠️</div>
+    <div class="mo-t" id="permT">Permission Required</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.65;margin:8px 0 18px;" id="permM"></div>
+    <div class="mo-acts"><button class="bs" onclick="permNo()">Deny</button><button class="bp" onclick="permYes()">Allow</button></div>
+  </div>
+</div>
+
+<!-- GITHUB MODAL -->
+<div class="ov" id="ghOv">
+  <div class="mo">
+    <button class="mo-x" onclick="hideMo('ghOv')"><i class="ti ti-x"></i></button>
+    <div class="mo-t"><i class="ti ti-brand-github"></i> Push to GitHub</div>
+    <div class="mo-s">Push your project to a remote repository.</div>
+    <div class="af"><label>Repository URL</label><input id="ghRepo" placeholder="https://github.com/user/repo.git"/></div>
+    <div class="af"><label>Commit Message</label><input id="ghMsg" value="feat: update from Code Light"/></div>
+    <div class="af"><label>GitHub Token (PAT)</label><input id="ghTok" type="password" placeholder="ghp_…"/></div>
+    <div class="mo-acts"><button class="bs" onclick="hideMo('ghOv')">Cancel</button><button class="bp" onclick="doPush()"><i class="ti ti-git-commit"></i> Push</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// SAFE STORAGE
+// ══════════════════════════════════════════
+function safeGet(key, def){
+  try{const v=localStorage.getItem(key);return v?JSON.parse(v):def;}
+  catch{localStorage.removeItem(key);return def;}
+}
+function showError(msg){
+  document.getElementById('errMsg').textContent=msg||'Something went wrong. Please reload.';
+  document.getElementById('errBoundary').classList.add('on');
+  document.getElementById('win').style.display='none';
+}
+window.addEventListener('error',e=>{showError(e.message);return true;});
+window.addEventListener('unhandledrejection',e=>{showError(e.reason?.message||'Unhandled promise rejection');return true;});
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+// Persistent store helper — writes to localStorage + Electron store
+function ss(k, v) {
+  localStorage.setItem(k, v);
+  if (window.electronAPI?.storeSet) window.electronAPI.storeSet(k, v).catch(()=>{});
+}
+// Hydrate localStorage from Electron store on startup
+if(window.electronAPI){
+  window.electronAPI.storeGet('').then(stored=>{
+    if(!stored) return;
+    for(const[k,v]of Object.entries(stored))
+      if(v!==null && v!==undefined) localStorage.setItem(k, typeof v==='string'?v:JSON.stringify(v));
+    Object.assign(S,{
+      chats: safeGet('cl_chats', []),
+      todos: safeGet('cl_todos', []),
+      cfg: safeGet('cl_cfg', S.cfg),
+      tokens: parseInt(localStorage.getItem('cl_tokens')||'0'),
+  theme: localStorage.getItem('cl_theme')||'light',
+  provKeys: safeGet('cl_provKeys', {}),
+    });
+    // Migrate old provKeys (string values) to arrays
+    for(const p of Object.keys(S.provKeys)){
+      if(!Array.isArray(S.provKeys[p])) S.provKeys[p]=[S.provKeys[p]];
+    }
+    ss('cl_provKeys', JSON.stringify(S.provKeys));
+    if(S.cfg.model) document.getElementById('mName').textContent=S.cfg.modelName||S.cfg.model;
+    renderCL();renderMsgs();renderTodos();updateUsage();updateApiBadge();
+    if(S.cfg.key) populateModelDD();
+  }).catch(e=>showError('Failed to load stored data: '+e.message));
+}
+
+const S = {
+  chats: safeGet('cl_chats', []),
+  activeId: null,
+  todos: safeGet('cl_todos', []),
+  cfg: safeGet('cl_cfg', {"provider":"openrouter","key":"","url":"","model":"","modelName":"","fallbackModel":""}),
+  tokens: parseInt(localStorage.getItem('cl_tokens')||'0'),
+  theme: localStorage.getItem('cl_theme')||'light',
+  atts: [],
+  pendPerm: null,
+  winMax: false,
+  ctxTarget: null,
+  selProv: 'openrouter',
+  fpPath: '',
+  fpData: null,
+  envKeys: {},
+};
+
+// Load .env keys
+if(window.electronAPI?.getEnvKeys){
+  window.electronAPI.getEnvKeys().then(keys=>{S.envKeys=keys||{};if(Object.keys(keys).length)console.log('Loaded env keys:',Object.keys(keys));}).catch(()=>{});
+}
+
+if(!S.chats.length){
+  S.chats=[
+    {id:1,title:'Welcome to Code Light',msgs:[
+      {r:'user',t:'What can you do?',ts:'now',model:''},
+      {r:'ai',t:`Welcome to <strong>Code Light</strong>! ⚡<br><br>I can help you with:<ul><li>💻 <strong>Code</strong> — write, review, debug, explain</li><li>📁 <strong>Files</strong> — read, create, edit local files (with permission)</li><li>🖥️ <strong>Commands</strong> — run terminal commands</li><li>🔍 <strong>Web search</strong> — open searches from context</li><li>📋 <strong>To-Do</strong> — manage your task list (top-right)</li></ul><br>To get started, click <strong>"No API Key"</strong> at the top, choose your provider, paste your key, and I'll load all available models for you to choose from.`,ts:'now',model:'Code Light'},
+    ]},
+    {id:2,title:'Python tips',msgs:[]},
+  ];
+  S.activeId=1;
+}
+if(!S.activeId) S.activeId=S.chats[0]?.id;
+if(S.theme==='dark') document.documentElement.classList.add('dark');
+
+// ══════════════════════════════════════════
+// PROVIDER CONFIGS
+// ══════════════════════════════════════════
+const PROVIDERS = {
+  openrouter: {
+    label:'OpenRouter API Key', ph:'sk-or-v1-…',
+    url:'https://openrouter.ai/api/v1',
+    hint:'Get a free key at openrouter.ai — access 100+ models with one key.',
+    models:[
+      {id:'openai/gpt-4o',name:'GPT-4o',tag:'OpenAI',ico:'🟢'},
+      {id:'openai/gpt-4o-mini',name:'GPT-4o Mini',tag:'OpenAI',ico:'🟢'},
+      {id:'anthropic/claude-3.5-sonnet',name:'Claude 3.5 Sonnet',tag:'Anthropic',ico:'🟠'},
+      {id:'anthropic/claude-3-haiku',name:'Claude 3 Haiku',tag:'Anthropic',ico:'🟠'},
+      {id:'google/gemini-pro-1.5',name:'Gemini 1.5 Pro',tag:'Google',ico:'🔵'},
+      {id:'google/gemini-flash-1.5',name:'Gemini 1.5 Flash',tag:'Google',ico:'🔵'},
+      {id:'deepseek/deepseek-chat',name:'DeepSeek V3',tag:'DeepSeek',ico:'🔷'},
+      {id:'deepseek/deepseek-r1',name:'DeepSeek R1',tag:'DeepSeek',ico:'🔷'},
+      {id:'mistralai/mistral-medium',name:'Mistral Medium',tag:'Mistral',ico:'🟣'},
+      {id:'meta-llama/llama-3.1-70b-instruct',name:'Llama 3.1 70B',tag:'Meta',ico:'🔥'},
+      {id:'qwen/qwen-2.5-72b-instruct',name:'Qwen 2.5 72B',tag:'Alibaba',ico:'🌸'},
+      {id:'openai/gpt-4o-mini:free',name:'GPT-4o Mini (Free)',tag:'Free',ico:'🆓'},
+      {id:'deepseek/deepseek-chat:free',name:'DeepSeek Chat (Free)',tag:'Free',ico:'🆓'},
+      {id:'meta-llama/llama-4-scout:free',name:'Llama 4 Scout (Free)',tag:'Free',ico:'🆓'},
+      {id:'qwen/qwq-32b:free',name:'QwQ 32B (Free)',tag:'Free',ico:'🆓'},
+      {id:'liquid/lfm-3b:free',name:'LFM 3B (Free)',tag:'Free',ico:'🆓'},
+    ]
+  },
+  openai: {
+    label:'OpenAI API Key', ph:'sk-…',
+    url:'https://api.openai.com/v1',
+    hint:'Get your key at platform.openai.com/api-keys',
+    models:[
+      {id:'gpt-4o',name:'GPT-4o',tag:'Latest',ico:'🟢'},
+      {id:'gpt-4o-mini',name:'GPT-4o Mini',tag:'Fast',ico:'🟢'},
+      {id:'gpt-4-turbo',name:'GPT-4 Turbo',tag:'Powerful',ico:'🟢'},
+      {id:'o1-preview',name:'o1 Preview',tag:'Reasoning',ico:'🧠'},
+      {id:'o1-mini',name:'o1 Mini',tag:'Reasoning',ico:'🧠'},
+    ]
+  },
+  anthropic: {
+    label:'Anthropic API Key', ph:'sk-ant-…',
+    url:'https://api.anthropic.com',
+    hint:'Get your key at console.anthropic.com',
+    models:[
+      {id:'claude-sonnet-4-6',name:'Claude Sonnet 4.6',tag:'Latest',ico:'🟠'},
+      {id:'claude-opus-4-6',name:'Claude Opus 4.6',tag:'Most Capable',ico:'🟠'},
+      {id:'claude-haiku-4-5',name:'Claude Haiku 4.5',tag:'Fast',ico:'🟠'},
+      {id:'claude-3-5-sonnet-20241022',name:'Claude 3.5 Sonnet',tag:'',ico:'🟠'},
+    ]
+  },
+  custom: {
+    label:'API Key', ph:'sk-…',
+    url:'',
+    hint:'Enter your API key and the base URL of any OpenAI-compatible endpoint.',
+    models:[]
+  },
+  pekpik: {
+    label:'Pekpik Free Key', ph:'sk-…',
+    url:'https://aiapiv2.pekpik.com/v1',
+    hint:'Get free keys from github.com/alistaitsacle/free-llm-api-keys (expire in 24-48h).',
+    models:[
+      {id:'gpt-5.4',name:'GPT-5.4',tag:'Free',ico:'🆓'},
+      {id:'deepseek-chat',name:'DeepSeek Chat',tag:'Free',ico:'🆓'},
+      {id:'deepseek-reasoner',name:'DeepSeek Reasoner',tag:'Free',ico:'🆓'},
+      {id:'gemini-2.5-pro',name:'Gemini 2.5 Pro',tag:'Free',ico:'🆓'},
+      {id:'gemini-2.5-flash',name:'Gemini 2.5 Flash',tag:'Free',ico:'🆓'},
+      {id:'mistral-medium-latest',name:'Mistral Medium',tag:'Free',ico:'🆓'},
+      {id:'codestral-latest',name:'Codestral',tag:'Free',ico:'🆓'},
+      {id:'glm-5',name:'GLM-5',tag:'Free',ico:'🆓'},
+      {id:'smart-chat',name:'Smart Chat (Auto)',tag:'Free',ico:'🆓'},
+    ]
+  },
+  gemini: {
+    label:'Gemini API Key', ph:'AIza…',
+    url:'https://generativelanguage.googleapis.com/v1beta/openai',
+    hint:'Get your free key at aistudio.google.com/apikey — no credit card needed.',
+    models:[
+      {id:'gemini-2.5-flash',name:'Gemini 2.5 Flash',tag:'Free',ico:'🔵'},
+      {id:'gemini-2.5-pro',name:'Gemini 2.5 Pro',tag:'Best',ico:'🔵'},
+      {id:'gemini-2.0-flash',name:'Gemini 2.0 Flash',tag:'Fast',ico:'🔵'},
+    ]
+  },
+  groq: {
+    label:'Groq API Key', ph:'gsk_…',
+    url:'https://api.groq.com/openai/v1',
+    hint:'Free key at console.groq.com/keys — ultra-fast inference, no credit card.',
+    models:[
+      {id:'llama-3.3-70b-versatile',name:'Llama 3.3 70B',tag:'Best',ico:'🔥'},
+      {id:'llama-4-scout',name:'Llama 4 Scout',tag:'New',ico:'🔥'},
+      {id:'qwen3-32b',name:'Qwen3 32B',tag:'Coding',ico:'🔥'},
+      {id:'llama-3.1-8b-instant',name:'Llama 3.1 8B',tag:'Fast',ico:'🔥'},
+    ]
+  },
+  keyless: {
+    label:'Discord Key (Free)', ph:'get on Discord',
+    url:'https://api.freetheai.xyz/v1',
+    hint:'Join discord.gg/secrets, run /signup, get a free key. Tool-calling supported.',
+    models:[
+      {id:'free-ai',name:'FreeTheAI Router',tag:'Free',ico:'🆓'},
+      {id:'gpt-4o-mini',name:'GPT-4o Mini (alias)',tag:'Free',ico:'🆓'},
+      {id:'claude-sonnet-4-6',name:'Claude Sonnet (alias)',tag:'Free',ico:'🆓'},
+    ]
+  },
+  ollamafreeapi: {
+    label:'OllamaFree (No Key)', ph:'no key needed',
+    url:'http://127.0.0.1:8000/v1',
+    noKey: true,
+    hint:'Self-hosted free Ollama proxy. Run: pip install ollamafreeapi && python -m server',
+    models:[
+      {id:'deepseek-r1:latest',name:'DeepSeek R1',tag:'Reasoning',ico:'🔷'},
+      {id:'mistral:latest',name:'Mistral',tag:'General',ico:'🟣'},
+      {id:'llama3:latest',name:'Llama 3',tag:'General',ico:'🦙'},
+      {id:'llama3.2:latest',name:'Llama 3.2',tag:'Latest',ico:'🦙'},
+      {id:'gpt-oss:20b',name:'GPT-OSS 20B',tag:'Gemma',ico:'🤖'},
+      {id:'mistral-nemo:custom',name:'Mistral Nemo',tag:'Custom',ico:'🟣'},
+      {id:'smollm2:135m',name:'SmolLM2 135M',tag:'Tiny',ico:'🧠'},
+      {id:'bakllava:latest',name:'BakLLaVA',tag:'Vision',ico:'👁️'},
+    ]
+  }
+};
+
+// ── Structured Errors ──
+class APIError extends Error {
+  constructor(msg, {status,type,provider}={}){super(msg);this.name='APIError';this.status=status;this.type=type;this.provider=provider;}
+  get isAuth(){return this.status===401||this.status===403;}
+  get isRate(){return this.status===429;}
+  get isRetryable(){return this.isRate||(this.status>=500&&this.status<600);}
+}
+class AuthError extends APIError { constructor(p){super('Authentication failed',{status:401,type:'auth',provider:p});this.name='AuthError';} }
+class RateLimitError extends APIError { constructor(p){super('Rate limited',{status:429,type:'rate_limit',provider:p});this.name='RateLimitError';} }
+
+// ── Model Registry ──
+const modelReg = new Map();
+const MODEL_CACHE_TTL = 300_000;
+let _lastModelLoad = 0;
+
+function regModel(m){
+  const e = modelReg.get(m.id);
+  if(e) Object.assign(e,m);
+  else modelReg.set(m.id, {...m});
+}
+function getModelsForProvider(pid){
+  return [...modelReg.values()].filter(m=>m.provider===pid);
+}
+async function loadModels(force){
+  if(!force&&Date.now()-_lastModelLoad<MODEL_CACHE_TTL) return;
+  _lastModelLoad=Date.now();
+  const savedCfg = JSON.parse(localStorage.getItem('cl_cfg')||'{}');
+  for(const[pid,pCfg]of Object.entries(PROVIDERS))
+    for(const m of(pCfg.models||[]))
+      regModel({id:m.id,name:m.name,provider:pid,apiModel:m.id,contextWindow:pCfg.ctx||128000,maxTokens:pCfg.maxOut||4096,ico:m.ico||'🔷',tag:m.tag||'',costIn:0,costOut:0,caps:{tools:pCfg.supportsTools!==false}});
+  // Only fetch live models for the current provider (it has the key)
+  const pid = savedCfg.provider;
+  if(pid && savedCfg.key) try {
+    const p = getProvider(pid, savedCfg);
+    const live = await p.getModels();
+    if(live?.length) for(const m of live) regModel({id:m.id,name:m.name,provider:pid,apiModel:m.id,contextWindow:128000,maxTokens:4096,ico:m.ico||'🔷',tag:m.tag||'',costIn:0,costOut:0,caps:{tools:true}});
+  }catch{}
+}
+
+// ── Token Estimation & Context Mgmt ──
+function estimateTokens(text){
+  return Math.ceil((text||'').length / 4);
+}
+function msgsTokens(msgs){
+  return msgs.reduce((s,m)=>s + estimateTokens(m.content||'') + 4, 0);
+}
+function truncateMsgs(messages, modelId){
+  const meta = modelReg.get(modelId);
+  const maxTokens = (meta?.contextWindow || 128000) - 2048;
+  const sysIdx = messages.findIndex(m=>m.role==='system');
+  const sys = sysIdx >= 0 ? [messages[sysIdx]] : [];
+  let rest = sysIdx >= 0 ? messages.slice(sysIdx+1) : [...messages];
+  while(rest.length > 1 && msgsTokens([...sys, ...rest]) > maxTokens) rest.shift();
+  return [...sys, ...rest];
+}
+
+function buildSysPrompt(hasTools){
+  if(!hasTools) return 'You are Code Light, an AI coding assistant. Reply helpfully and concisely.';
+  return `You are Code Light, an AI coding assistant integrated with the user's machine.
+
+CRITICAL: NEVER dump raw file contents in your response. Summarize what you find. Keep responses under 150 tokens.
+
+You MUST proactively explore the codebase using your tools. Never ask the user "can you show me your code" or "what files are involved?" — search and read them yourself.
+
+WORKFLOW:
+1. **Explore first** — use list_files and search_files to understand the project structure
+2. **Read relevant files** — use read_file to examine specific code
+3. **Plan** — think through the change before implementing
+4. **Implement** — use write_file and execute_command to make changes
+5. **Verify** — run relevant commands to confirm it works
+
+TOOLS:
+- search_files(pattern, include, path) — grep file contents for code patterns
+- list_files(path, depth) — explore directory structure
+- read_file(path) — read a file's contents
+- write_file(path, content) — create or overwrite a file
+- execute_command(command) — run any shell command (grep, find, npm, git, etc.)
+- web_search(query) — search the web for docs or answers`;
+}
+
+function transformMsgs(provider, messages){
+  let system = null;
+  const msgs = messages.filter(m=>{if(m.role==='system'){system=system||m.content;return false;}return true;});
+  // Anthropic format conversion
+  if(provider==='anthropic'){
+    const out=[];
+    for(const m of msgs){
+      if(m.role==='tool') out.push({role:'user',content:[{type:'tool_result',tool_use_id:m.tool_call_id,content:m.content||''}]});
+      else if(m.role==='assistant'&&m.tool_calls){
+        const c=[];
+        if(m.content) c.push({type:'text',text:m.content});
+        for(const tc of m.tool_calls){
+          try{c.push({type:'tool_use',id:tc.id,name:tc.function.name,input:JSON.parse(tc.function.arguments)});}catch{c.push({type:'tool_use',id:tc.id,name:tc.function.name,input:{}});}
+        }
+        out.push({role:'assistant',content:c});
+      }else out.push({role:m.role,content:m.content||''});
+    }
+    return {system,messages:out};
+  }
+  return {system,messages:msgs};
+}
+
+// ── Provider Classes ──
+class BaseProvider {
+  constructor(cfg) { this.cfg = cfg; }
+  get id() { return ''; }
+  async getModels() { return PROVIDERS[this.id]?.models || []; }
+  async chat(model, messages, tools, opts) { throw new Error('Not implemented'); }
+  async *streamChat(model, messages, tools, opts) { throw new Error('Not implemented'); }
+  async request(url, opts={}, retries=3){
+    const ctrl = new AbortController();
+    const to = setTimeout(()=>ctrl.abort(),60000);
+    opts.signal = ctrl.signal;
+    for(let i=0;i<retries;i++) try {
+      const res = await fetch(url,opts);
+      if(res.ok){clearTimeout(to);return res;}
+      let em='HTTP '+res.status;
+      try{const e=await res.json();em=e.error?.message||JSON.stringify(e);}catch{}
+      const err = new APIError(em,{status:res.status});
+      if(!err.isRetryable||i===retries-1){clearTimeout(to);throw err;}
+      await new Promise(r=>setTimeout(r,Math.pow(2,i)*1000));
+    }catch(e){
+      clearTimeout(to);
+      if(e instanceof APIError&&!e.isRetryable) throw e;
+      if(e.name==='AbortError'){throw new APIError('Request timed out',{type:'timeout'});}
+      const isNetErr = e.name==='TypeError'||e.message?.includes('Failed to fetch')||e.message?.includes('NetworkError');
+      if(isNetErr){
+        if(i===retries-1){
+          const corsHint = !window.electronAPI ? ' — browsers block direct API calls. Use the desktop app or switch to OpenRouter (supports browser CORS).' : '';
+          throw new APIError('Network error'+corsHint+' ('+url.replace(/\?.*/,'')+')',{type:'network'});
+        }
+      }else if(i===retries-1) throw new APIError(e.message,{type:'network'});
+      await new Promise(r=>setTimeout(r,Math.pow(2,i)*1000));
+    }
+    clearTimeout(to);
+    throw new APIError('Max retries exceeded',{type:'retry'});
+  }
+}
+
+class OpenAIProvider extends BaseProvider {
+  get id() { return 'openai'; }
+  getBaseUrl(){return(this.cfg.url||PROVIDERS[this.id]?.url||'').replace(/\/+$/,'');}
+  getHeaders(){return{'Content-Type':'application/json','Authorization':'Bearer '+this.cfg.key};}
+  async getModels(){
+    try{
+      const res = await this.request(this.getBaseUrl()+'/models',{headers:this.getHeaders()});
+      const d = await res.json();
+      return (d.data||[]).filter(m=>m.id.startsWith('gpt')||m.id.startsWith('o')||m.id.startsWith('dall-e')).map(m=>({id:m.id,name:m.id,tag:m.id.includes('mini')||m.id.includes('flash')?'Fast':m.id.includes('turbo')?'Turbo':'',ico:'🤖'}));
+    }catch{return super.getModels();}
+  }
+  async chat(model, messages, tools, opts) {
+    const body = { model, messages, max_tokens: opts?.maxTokens || 1024 };
+    if(tools?.length){body.tools=tools;body.tool_choice='auto';}
+    const res = await this.request(this.getBaseUrl()+'/chat/completions',{method:'POST',headers:this.getHeaders(),body:JSON.stringify(body)});
+    return this._parseChatRes(res);
+  }
+  async *streamChat(model, messages, tools, opts){
+    const body={model,messages,max_tokens:opts?.maxTokens||2048,stream:true};
+    if(tools?.length){body.tools=tools;body.tool_choice='auto';}
+    const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),120000);
+    const res=await fetch(this.getBaseUrl()+'/chat/completions',{method:'POST',headers:this.getHeaders(),body:JSON.stringify(body),signal:ctrl.signal});clearTimeout(to);
+    if(!res.ok){let em='HTTP '+res.status;try{const e=await res.json();em=e.error?.message||JSON.stringify(e);}catch{}throw new APIError(em,{status:res.status});}
+    const reader=res.body?.getReader();if(!reader)throw new APIError('Streaming not supported');
+    const dec=new TextDecoder();let buf='',full='',pending={};
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop()||'';
+      for(const line of lines){
+        if(!line.startsWith('data: '))continue;const data=line.slice(6).trim();
+        if(!data||data==='[DONE]')continue;
+        try{
+          const p=JSON.parse(data),c=p.choices?.[0];if(!c)continue;
+          if(c.delta?.content){full+=c.delta.content;yield{type:'token',text:c.delta.content};}
+          if(c.delta?.tool_calls)for(const t of c.delta.tool_calls){
+            const i=t.index;if(!pending[i])pending[i]={id:'',type:'',function:{name:'',arguments:''}};
+            if(t.id)pending[i].id=t.id;if(t.type)pending[i].type=t.type;
+            if(t.function){if(t.function.name)pending[i].function.name+=t.function.name;if(t.function.arguments)pending[i].function.arguments+=t.function.arguments;}
+          }
+          if(c.finish_reason){
+            const tc=c.finish_reason==='tool_calls'?Object.values(pending):[];
+            yield{type:'done',finish_reason:c.finish_reason,tool_calls:tc,full_content:full};
+            return;
+          }
+        }catch{}
+      }
+    }
+  }
+  async _parseChatRes(res){
+    const d = await res.json();
+    if(d.error) throw new APIError(d.error.message||JSON.stringify(d.error),{status:res.status});
+    const choice = d.choices?.[0]?.message;
+    if(!choice) throw new APIError('Empty response');
+    return {content:choice.content||'',toolCalls:(choice.tool_calls||[]).map(tc=>({id:tc.id,type:tc.type,function:{name:tc.function.name,arguments:tc.function.arguments}}))};
+  }
+}
+
+class OpenRouterProvider extends OpenAIProvider {
+  get id(){return'openrouter';}
+  getHeaders(){return{'Content-Type':'application/json','Authorization':'Bearer '+this.cfg.key,'HTTP-Referer':'https://codelight.app','X-Title':'Code Light'};}
+  async getModels(){
+    try{
+      const res = await this.request('https://openrouter.ai/api/v1/models');
+      const d = await res.json();
+      return(d.data||[]).map(m=>({id:m.id,name:m.name||m.id,tag:m.id.includes(':free')?'Free':'',ico:m.id.includes(':free')?'🆓':'🔀'}));
+    }catch{return super.getModels();}
+  }
+}
+
+class AnthropicProvider extends BaseProvider {
+  get id(){return'anthropic';}
+  async chat(model, messages, tools, opts){
+    const {system, messages:msgs} = transformMsgs('anthropic', messages);
+    const out = msgs.map(m=>({role:m.role,content:m.content}));
+    const body={model,max_tokens:opts?.maxTokens||2048,messages:out};
+    if(system) body.system=system;
+    if(tools?.length) body.tools=tools.map(t=>({name:t.function.name,description:t.function.description,input_schema:t.function.parameters}));
+    const res=await this.request('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':this.cfg.key,'anthropic-version':'2023-06-01'},body:JSON.stringify(body)});
+    const d=await res.json();
+    if(d.error) throw new APIError(d.error.message||JSON.stringify(d.error));
+    if(!d.content?.length) throw new APIError('Empty response');
+    return{content:d.content.filter(c=>c.type==='text').map(c=>c.text).join('\n')||'',toolCalls:d.content.filter(c=>c.type==='tool_use').map(t=>({id:t.id,type:'function',function:{name:t.name,arguments:JSON.stringify(t.input)}}))};
+  }
+  async *streamChat(model, messages, tools, opts){
+    const {system,messages:msgs}=transformMsgs('anthropic',messages);
+    const out=msgs.map(m=>({role:m.role,content:m.content}));
+    const body={model,max_tokens:opts?.maxTokens||2048,messages:out,stream:true};
+    if(system) body.system=system;
+    if(tools?.length) body.tools=tools.map(t=>({name:t.function.name,description:t.function.description,input_schema:t.function.parameters}));
+    const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),120000);
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':this.cfg.key,'anthropic-version':'2023-06-01'},body:JSON.stringify(body),signal:ctrl.signal});clearTimeout(to);
+    if(!res.ok){let em='HTTP '+res.status;try{const e=await res.json();em=e.error?.message||JSON.stringify(e);}catch{}throw new APIError(em,{status:res.status});}
+    const reader=res.body?.getReader();if(!reader)throw new APIError('Streaming not supported');
+    const dec=new TextDecoder();let buf='';
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop()||'';
+      for(const line of lines){
+        if(line.startsWith('data: '))try{
+          const d=JSON.parse(line.slice(6));
+          if(d.type==='content_block_delta'&&d.delta?.type==='text_delta') yield{type:'token',text:d.delta.text};
+          if(d.type==='message_delta'&&d.delta?.stop_reason){
+            yield{type:'done',finish_reason:d.delta.stop_reason==='end_turn'?'stop':d.delta.stop_reason,tool_calls:[],full_content:''};
+            return;
+          }
+        }catch{}
+      }
+    }
+  }
+}
+
+class OllamaFreeProvider extends OpenAIProvider {
+  get id(){return'ollamafreeapi';}
+  getHeaders(){return{'Content-Type':'application/json'};}
+  async getModels(){
+    try{
+      const res = await this.request(this.getBaseUrl()+'/models');
+      const d = await res.json();
+      return (d.data||[]).map(m=>({id:m.id,name:m.id,tag:'',ico:'🦙'}));
+    }catch{return super.getModels();}
+  }
+}
+const PROVIDER_CLASSES = { openrouter:OpenRouterProvider, openai:OpenAIProvider, anthropic:AnthropicProvider, custom:OpenAIProvider, pekpik:OpenAIProvider, gemini:OpenAIProvider, groq:OpenAIProvider, keyless:OpenAIProvider, ollamafreeapi:OllamaFreeProvider };
+
+function getProvider(id, cfg) {
+  const Cls = PROVIDER_CLASSES[id];
+  if (!Cls) throw new Error('Unknown provider: ' + id);
+  return new Cls(cfg);
+}
+
+// ══════════════════════════════════════════
+// PROVIDER SELECTION
+// ══════════════════════════════════════════
+function selProv(p, el){
+  S.selProv = p;
+  document.querySelectorAll('.prov-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  const cfg = PROVIDERS[p];
+  document.getElementById('keyLabel').textContent = cfg.label;
+  document.getElementById('keyInp').placeholder = cfg.ph;
+  document.getElementById('keyHint').textContent = cfg.hint;
+  document.getElementById('urlRow').style.display = p==='custom'?'':'none';
+  document.getElementById('urlInp').value = cfg.url;
+  const pk = S.provKeys[p]; document.getElementById('keyInp').value = Array.isArray(pk)&&pk.length ? pk[0] : (p === S.cfg.provider ? S.cfg.key : '') || '';
+}
+
+async function saveKey(){
+  const p = S.selProv;
+  const pCfg = PROVIDERS[p];
+  const key = document.getElementById('keyInp').value.trim();
+  if(!key && !pCfg?.noKey){toast('Please enter an API key');return;}
+  const url = p==='custom'
+    ? (document.getElementById('urlInp').value.trim() || PROVIDERS[p].url)
+    : PROVIDERS[p].url;
+  const provider = getProvider(p, {key, url});
+  let models;
+  try { models = await provider.getModels(); } catch(e){ toast('⚠️ Could not load models: '+(e.message||'Network error')); }
+  if(!models?.length) models = PROVIDERS[p]?.models || [];
+  const firstModel = models.length ? models[0] : {id:'',name:'Select model'};
+  S.cfg.provider  = p;
+  S.cfg.key       = key || (pCfg?.noKey ? 'free' : '');
+  S.cfg.url       = url;
+  S.cfg.model     = firstModel.id;
+  S.cfg.modelName = firstModel.name;
+  ss('cl_cfg', JSON.stringify(S.cfg));
+  if(!Array.isArray(S.provKeys[p])) S.provKeys[p] = [];
+  const arr = S.provKeys[p];
+  if(key && !arr.includes(key)) arr.unshift(key);
+  if(arr.length>10) arr.length=10;
+  ss('cl_provKeys', JSON.stringify(S.provKeys));
+  for(const m of models) regModel({id:m.id,name:m.name||m.id,provider:p,apiModel:m.id,contextWindow:128000,maxTokens:4096,ico:m.ico||'🔷',tag:m.tag||'',costIn:0,costOut:0,caps:{tools:true}});
+  _lastModelLoad = Date.now();
+  hideMo('apiOv');
+  updateApiBadge();
+  populateModelDD();
+  document.getElementById('mName').textContent = firstModel.name;
+  toast('\u2705 Key saved \u2014 ' + models.length + ' models loaded');
+}
+
+function updateApiBadge(){
+  const b = document.getElementById('apiBadge');
+  const prov = PROVIDERS[S.cfg.provider];
+  if(S.cfg.key || prov?.noKey){
+    const pName = {openrouter:'OpenRouter',openai:'OpenAI',anthropic:'Anthropic',custom:'Custom',pekpik:'Pekpik',gemini:'Gemini',groq:'Groq',keyless:'KeylessAI',ollamafreeapi:'OllamaFree'}[S.cfg.provider]||S.cfg.provider;
+    b.textContent = pName+' ✓';
+    b.className = 'api-badge';
+  } else {
+    b.textContent = 'No API Key';
+    b.className = 'api-badge none';
+  }
+}
+
+async function populateModelDD(){
+  const p = S.cfg.provider;
+  let models = getModelsForProvider(p);
+  if(!models.length){ await loadModels(); models = getModelsForProvider(p); }
+  if(!models.length) models = PROVIDERS[p]?.models || [];
+  if(!models.length){
+    document.getElementById('mDDItems').innerHTML = `<div class="ddi" style="color:var(--t3);font-size:12px;">No models — add an API key</div>`;
+    return;
+  }
+  document.getElementById('mDDItems').innerHTML = models.map(m=>`
+    <div class="ddi${S.cfg.model===m.id?' sel':''}" onclick="pickModel('${m.id}','${m.name}',this)">
+      <span style="font-size:16px;">${m.ico||'🔷'}</span>
+      <span style="flex:1;">${m.name}</span>
+      ${m.tag?`<span class="db">${m.tag}</span>`:''}
+    </div>`).join('');
+}
+
+function pickModel(id, name, el){
+  S.cfg.model = id;
+  S.cfg.modelName = name;
+  ss('cl_cfg', JSON.stringify(S.cfg));
+  document.getElementById('mName').textContent = name;
+  document.querySelectorAll('#mDDItems .ddi').forEach(d=>d.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('mDD').classList.remove('on');
+  toast('Model: '+name);
+}
+
+// ── Tool definitions for function calling ──
+// ── Tool Registry ──
+const toolReg = new Map();
+function regTool(name, desc, params, fn){
+  toolReg.set(name, {name, desc, params, fn});
+}
+regTool('read_file','Read a file from the local filesystem.',{type:'object',properties:{path:{type:'string',description:'Absolute path to file'}},required:['path']},
+  async a=>{if(!window.electronAPI)throw Error('Requires Electron');return window.electronAPI.readFile(a.path);});
+regTool('write_file','Write content to a file (overwrites existing).',{type:'object',properties:{path:{type:'string',description:'Absolute path'},content:{type:'string',description:'Content to write'}},required:['path','content']},
+  async a=>{if(!window.electronAPI)throw Error('Requires Electron');await window.electronAPI.writeFile(a.path,a.content);return '✓ Written to '+a.path;});
+regTool('execute_command','Execute a shell command.',{type:'object',properties:{command:{type:'string',description:'Command to run'}},required:['command']},
+  async a=>{if(!window.electronAPI)throw Error('Requires Electron');return window.electronAPI.execCommand(a.command);});
+regTool('web_search','Search the web for current information.',{type:'object',properties:{query:{type:'string',description:'Search query'}},required:['query']},
+  async a=>{if(!window.electronAPI)throw Error('Requires Electron');return window.electronAPI.webSearch(a.query);});
+regTool('search_files','Search file contents by pattern (like grep). Returns matching files and line snippets.',{type:'object',properties:{pattern:{type:'string',description:'Text or regex pattern to search for'},include:{type:'string',description:'File extension filter (e.g. .js, .ts, .py)'},path:{type:'string',description:'Directory to search (default: current project)'}},required:['pattern']},
+  async a=>{
+    if(!window.electronAPI)throw Error('Requires Electron');
+    const p=a.path||'.';const inc=a.include?`--include="*${a.include.startsWith('.')?a.include:'*.'+a.include}"`:'';const esc=a.pattern.replace(/"/g,'\\"');
+    return navigator.platform.includes('Win')?window.electronAPI.execCommand(`Get-ChildItem -Recurse -Filter "${a.include||'*'}" "${p}" | Select-String -Pattern "${esc}" -CaseSensitive | Select-Object -First 200 | Format-Table -AutoSize`):
+      window.electronAPI.execCommand(`grep -rn "${esc}" ${inc} "${p}" 2>/dev/null | head -200`);
+  });
+regTool('list_files','List files in a directory. Use this to explore project structure.',{type:'object',properties:{path:{type:'string',description:'Directory path to list'},depth:{type:'number',description:'Max directory depth (default: 2)'}},required:['path']},
+  async a=>{
+    if(!window.electronAPI)throw Error('Requires Electron');
+    const p=a.path||'.';const d=a.depth||2;
+    return navigator.platform.includes('Win')?window.electronAPI.execCommand(`Get-ChildItem -Recurse -Depth ${d} "${p}" | Select-Object FullName,Length,LastWriteTime | Format-Table -AutoSize`):
+      window.electronAPI.execCommand(`find "${p}" -maxdepth ${d} -not -path '*/node_modules/*' -not -path '*/.git/*' 2>/dev/null | head -300`);
+  });
+
+function getTools(){
+  return [...toolReg.values()].map(t=>({type:'function',function:{name:t.name,description:t.desc,parameters:t.params}}));
+}
+async function execTool(name, args){
+  const t = toolReg.get(name);
+  if(!t) return 'Unknown tool: '+name;
+  return await t.fn(args);
+}
+
+// ── Cost Estimation ──
+function estimateCost(modelId, pTok, cTok){
+  const m = modelReg.get(modelId);
+  let ci = m?.costIn || 0;
+  let co = m?.costOut || 0;
+  // Known model costs ($ per 1M tokens) if not in registry
+  const known = {
+    'gpt-4o':[2.5,10],'gpt-4o-mini':[0.15,0.6],'gpt-4-turbo':[10,30],'gpt-4':[30,60],
+    'claude-sonnet-4-6':[3,15],'claude-opus-4-6':[15,75],'claude-haiku-4-5':[0.8,4],
+    'gemini-2.5-flash':[0.15,0.6],'gemini-2.5-pro':[1.25,10],
+  };
+  if(!ci && !co && known[modelId]){ci=known[modelId][0];co=known[modelId][1];}
+  if(!ci && !co) return null;
+  const inp = +(pTok/1e6*ci).toFixed(6);
+  const out = +(cTok/1e6*co).toFixed(6);
+  return {in:inp, out:out, total:+(inp+out).toFixed(6)};
+}
+
+// ══════════════════════════════════════════
+// API CALL — always reads fresh from localStorage
+// ══════════════════════════════════════════
+async function callAPI(msgs){
+  const cfg = JSON.parse(localStorage.getItem('cl_cfg') || '{}');
+  const provCfg = PROVIDERS[cfg.provider];
+  if(!cfg.key && !provCfg?.noKey) throw new Error('No API key. Click the badge at the top to add one.');
+  if(!cfg.model) throw new Error('No model selected. Click the model picker to choose one.');
+  if(!cfg.url)   throw new Error('No API base URL set. Re-save your key to fix this.');
+
+  const hasTools = !!window.electronAPI;
+
+  // ── Build rotation plan ──
+  // Each entry: {providerId, key, url, models[], label}
+  const plan = [];
+
+  function collectKeys(providerId){
+    const arr = [...(Array.isArray(S.provKeys[providerId])?S.provKeys[providerId]:[])];
+    if(providerId===cfg.provider && cfg.key && !arr.includes(cfg.key)){
+      if(cfg.key) arr.unshift(cfg.key);
+    }
+    const ek = S.envKeys[providerId]?.key;
+    if(ek && !arr.includes(ek)) arr.push(ek);
+    if(!arr.length && PROVIDERS[providerId]?.noKey) arr.push('free');
+    return arr.filter(Boolean);
+  }
+
+  function collectModels(providerId){
+    const pcfg = PROVIDERS[providerId];
+    const set = new Set();
+    if(providerId===cfg.provider) set.add(cfg.model);
+    if(S.envKeys[providerId]?.model) set.add(S.envKeys[providerId].model);
+    if(pcfg?.models) for(const m of pcfg.models) set.add(m.id);
+    // Sort: free models first (for OpenRouter :free), then others
+    return [...set].sort((a,b)=>{
+      const aFree = a.includes(':free')||a.includes('/free');
+      const bFree = b.includes(':free')||b.includes('/free');
+      if(aFree && !bFree) return -1;
+      if(!aFree && bFree) return 1;
+      return 0;
+    });
+  }
+
+  // Current provider: try all its keys × all its models
+  const curKeys = collectKeys(cfg.provider);
+  const curModels = collectModels(cfg.provider);
+  if(curKeys.length) plan.push({providerId:cfg.provider, keys:curKeys, models:curModels, label:cfg.provider, url:PROVIDERS[cfg.provider]?.url||cfg.url});
+
+  // Other providers
+  for(const[p, pcfg] of Object.entries(PROVIDERS)){
+    if(p===cfg.provider || p==='custom' || p==='pekpik' || p==='keyless') continue;
+    const keys = collectKeys(p);
+    if(!keys.length) continue;
+    const models = collectModels(p);
+    if(!models.length) continue;
+    plan.push({providerId:p, keys, models, label:p, url:pcfg?.url||''});
+  }
+
+  const curMsgs = [...msgs];
+  let allToolResults = [];
+  let lastErr;
+
+  // ── Execute rotation plan ──
+  outer: for(const entry of plan){
+    for(const key of entry.keys){
+      for(let mi=0; mi<entry.models.length; mi++){
+        const model = entry.models[mi];
+        const provider = getProvider(entry.providerId, {key, url:entry.url});
+        try{
+          while(true){
+            let chatRes = await _chatWithFallback(provider, model, curMsgs, hasTools, allToolResults);
+            if(!chatRes) return {content:'', toolResults:allToolResults};
+            if(!chatRes.toolCalls?.length) return {content:chatRes.content||'', toolResults:allToolResults};
+            curMsgs.push({role:'assistant',content:chatRes.content||null,tool_calls:chatRes.toolCalls.map(t=>({id:t.id,type:t.type,function:t.function}))});
+            for(const tc of chatRes.toolCalls){
+              let args;
+              try{ args=JSON.parse(tc.function.arguments); }catch(e){ args={}; }
+              let toolResult;
+              try{ toolResult = await execTool(tc.function.name, args); }catch(e){ toolResult='Error: '+e.message; }
+              allToolResults.push({name:tc.function.name,args,result:toolResult,id:tc.id});
+              curMsgs.push({role:'tool',tool_call_id:tc.id,content:typeof toolResult==='string'?toolResult:JSON.stringify(toolResult)});
+            }
+          }
+        }catch(e){
+          lastErr=e;
+          const m=e.message||'';
+          const isLimit = m.includes('can only afford')||m.includes('Prompt tokens limit exceeded')||
+                          m.includes('Rate limit')||m.includes('quota')||m.includes('insufficient_quota')||
+                          m.includes('free-models-per-day')||m.includes('rate_limit')||
+                          m.includes('not found')||m.includes('HTTP 4')||m.includes('model_not_found')||
+                          m.includes('Too Many Requests')||m.includes('No endpoints found');
+          if(!isLimit) throw e;
+        }
+      }
+    }
+  }
+  // ── Fallback: try live free models from current provider ──
+  let liveFree = [];
+  try{
+    const p = getProvider(cfg.provider, {key:cfg.key, url:cfg.url});
+    const lives = await p.getModels();
+    if(lives?.length){
+      // Prefer free models (OpenRouter :free suffix), then others
+      const free = lives.filter(m=>m.id.includes(':free')||m.tag==='Free').map(m=>m.id);
+      const other = lives.filter(m=>!m.id.includes(':free')&&m.tag!=='Free').map(m=>m.id);
+      liveFree = [...new Set([...free, ...other])].filter(m=>m!==cfg.model).slice(0,30);
+    }
+  }catch{}
+  const fallbackModels = liveFree.length ? liveFree : [...new Set(getModelsForProvider(cfg.provider).map(m=>m.id))].filter(m=>m!==cfg.model).slice(0,20);
+  if(fallbackModels.length){
+    const key = (Array.isArray(curKeys)&&curKeys.length)?curKeys[0]:cfg.key;
+    if(key) for(const model of fallbackModels){
+      const provider = getProvider(cfg.provider, {key, url:PROVIDERS[cfg.provider]?.url||cfg.url});
+      try{
+        const chatRes = await _chatWithFallback(provider, model, curMsgs, hasTools, allToolResults);
+        if(!chatRes) return {content:'', toolResults:allToolResults};
+        if(!chatRes.toolCalls?.length) return {content:chatRes.content||'', toolResults:allToolResults};
+      }catch(e){lastErr=e;}
+    }
+  }
+  throw lastErr;
+}
+
+async function _chatWithFallback(provider, model, messages, hasTools, toolResults){
+  const tryChat = async (withTools, opts) => {
+    try {
+      return await provider.chat(model, messages, withTools && hasTools ? getTools() : [], opts);
+    } catch(e) {
+      return {_error:e};
+    }
+  };
+
+  // Attempt 1: normal request with tools
+  let result = await tryChat(true);
+  if(result._error){
+    const msg = result._error.message || '';
+    // Tool calling not supported — try fallback model or text-only
+    if(msg.includes('No endpoints found that support tool use')){
+      const fb = S.cfg.fallbackModel;
+      if(fb && fb !== model){
+        model = fb;
+        result = await tryChat(true);
+        if(result._error) throw result._error;
+        return result;
+      }
+      result = await tryChat(false);
+      if(result._error) throw result._error;
+      return result;
+    }
+    // Rate limited — try fallback model if available
+    if(msg.includes('Rate limit') || msg.includes('rate_limit') || msg.includes('free-models-per-day')){
+      const fb = S.cfg.fallbackModel;
+      if(fb && fb !== model){
+        model = fb;
+        result = await tryChat(true);
+        if(result._error) throw result._error;
+        return result;
+      }
+      throw result._error;
+    }
+    // Quota exceeded — try fallback model if available
+    if(msg.includes('quota') || msg.includes('exceeded your current') || msg.includes('insufficient_quota')){
+      const fb = S.cfg.fallbackModel;
+      if(fb && fb !== model){
+        model = fb;
+        result = await tryChat(true);
+        if(result._error) throw result._error;
+        return result;
+      }
+      throw result._error;
+    }
+    // Provider error — retry once after delay
+    if(msg.includes('Provider returned error')){
+      await new Promise(r => setTimeout(r, 3000));
+      result = await tryChat(true);
+      if(result._error){
+        result = await tryChat(false);
+        if(result._error) throw result._error;
+        return result;
+      }
+      return result;
+    }
+    // Not enough credits — retry with reduced max_tokens
+    if(msg.includes('can only afford')){
+      const m = msg.match(/can only afford (\d+)/);
+      if(m){
+        const afford = Math.max(parseInt(m[1]) - 20, 50);
+        result = await tryChat(!!hasTools, { maxTokens: afford });
+        if(result._error) throw result._error;
+        return result;
+      }
+    }
+    // Prompt too large for remaining credits — trim history aggressively
+    if(msg.includes('Prompt tokens limit exceeded')){
+      const si=messages.findIndex(m=>m.role==='system');
+      messages=[messages[si],...messages.filter((_,j)=>j!==si).slice(-2)];
+      result=await tryChat(!!hasTools,{maxTokens:64});
+      if(result._error) throw result._error;
+      return result;
+    }
+    // Context length exceeded — trim history and retry
+    if(msg.includes('maximum context length')||msg.includes('context_length_exceeded')){
+      const si=messages.findIndex(m=>m.role==='system');
+      messages=[messages[si],...messages.filter((_,j)=>j!==si).slice(-6)];
+      result=await tryChat(!!hasTools,{maxTokens:512});
+      if(result._error) throw result._error;
+      return result;
+    }
+    // Unknown error — propagate
+    throw result._error;
+  }
+  return result;
+}
+
+// Quick connection test
+async function testConnection(){
+  toast('Testing connection…');
+  try{
+    const r = await callAPI([{role:'user', content:'Reply with just the word OK.'}]);
+    toast('Connection OK: ' + (r.content||'').replace(/<[^>]+>/g,'').slice(0,40));
+  } catch(e){
+    toast('Failed: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════
+// LOCAL COMMANDS (bypass API for file ops)
+// ══════════════════════════════════════════
+async function tryLocalCmd(text, chat){
+  const t = text.trim(); const lower = t.toLowerCase(); const ee = window.electronAPI;
+  // Detect a Windows path (e.g. C:\Users\...) or a relative path
+  const pathRx = /[a-zA-Z]:\\(?:[^\\\s]+\\)*[^\\\s]*|[a-zA-Z]:\\/;
+  const pathM = t.match(pathRx);
+  if(!pathM) return false;
+  const p = pathM[0].replace(/"$/, '');
+  const ts = ()=>({hour:'2-digit',minute:'2-digit'});
+
+  // Count files: "how many files in X?"
+  if(lower.includes('how many')||lower.includes('count files')||lower.includes('in numbers')){
+    let cmd = `(Get-ChildItem -LiteralPath "${p.replace(/"/g,'\\"')}" -File).Count`;
+    try{
+      const cnt = (await ee.execCommand(cmd)).trim();
+      const rts = new Date().toLocaleTimeString([],ts());
+      chat.msgs.push({r:'ai',t:`📁 <strong>${p}</strong> — <strong>${cnt}</strong> files`,ts:rts,model:'local'});
+      return true;
+    }catch(e){chat.msgs.push({r:'ai',t:`<span style="color:var(--danger)">⚠️ ${e.message}</span>`,ts:new Date().toLocaleTimeString([],ts()),model:''});return true;}
+  }
+
+  // List files: "list files in X" or "show files in X"
+  if(lower.includes('list')||lower.includes('show files')||lower.includes('display')){
+    let cmd = `Get-ChildItem -LiteralPath "${p.replace(/"/g,'\\"')}" | Select-Object Name | Format-Table -AutoSize`;
+    try{
+      const raw = await ee.execCommand(cmd);
+      const cnt = raw.trim().split('\n').length - 3;
+      const rts = new Date().toLocaleTimeString([],ts());
+      chat.msgs.push({r:'ai',t:`📁 <strong>${p}</strong> — ${cnt} files${cnt>0?`\n<pre class="exec-out">${raw.replace(/</g,'&lt;')}</pre>`:''}`,ts:rts,model:'local'});
+      return true;
+    }catch(e){chat.msgs.push({r:'ai',t:`<span style="color:var(--danger)">⚠️ ${e.message}</span>`,ts:new Date().toLocaleTimeString([],ts()),model:''});return true;}
+  }
+
+  // Read file: "read X" or "show content of X"
+  if(lower.includes('read')||lower.includes('show content')||lower.includes('open')){
+    try{
+      const content = await ee.readFile(p);
+      const rts = new Date().toLocaleTimeString([],ts());
+      chat.msgs.push({r:'ai',t:`📄 <strong>${p}</strong>\n<pre class="exec-out">${(content||'').replace(/</g,'&lt;').slice(0,3000)}</pre>`,ts:rts,model:'local'});
+      return true;
+    }catch(e){chat.msgs.push({r:'ai',t:`<span style="color:var(--danger)">⚠️ ${e.message}</span>`,ts:new Date().toLocaleTimeString([],ts()),model:''});return true;}
+  }
+
+  // Search: "search for X in Y"
+  const srchM = t.match(/(?:search|find|grep)\s+(?:for\s+)?['"]?([^'"]+)['"]?\s+(?:in|within|under)\s+(.+)/i);
+  if(srchM){
+    const pat = srchM[1].trim(); const dir = srchM[2].trim();
+    try{
+      // Use PowerShell Select-String for Windows
+      const raw = await ee.execCommand(`Get-ChildItem -Recurse "${dir}" | Select-String -Pattern "${pat.replace(/"/g,'\\"')}" -CaseSensitive | Select-Object -First 50 | Format-Table -AutoSize`);
+      const rts = new Date().toLocaleTimeString([],ts());
+      chat.msgs.push({r:'ai',t:`🔍 <strong>Search: "${pat}"</strong> in ${dir}\n<pre class="exec-out">${(raw||'No matches').replace(/</g,'&lt;')}</pre>`,ts:rts,model:'local'});
+      return true;
+    }catch(e){chat.msgs.push({r:'ai',t:`<span style="color:var(--danger)">⚠️ ${e.message}</span>`,ts:new Date().toLocaleTimeString([],ts()),model:''});return true;}
+  }
+  return false;
+}
+
+// ══════════════════════════════════════════
+// SEND
+// ══════════════════════════════════════════
+
+async function sendMsg(){
+  const inp = document.getElementById('mi');
+  const text = inp.value.trim();
+  if(!text && !S.atts.length) return;
+  if(!S.cfg.key){showApiModal();return;}
+  inp.value=''; inp.style.height='';
+
+  let chat = S.chats.find(c=>c.id===S.activeId);
+  if(!chat){
+    chat = {id:Date.now(), title:text.slice(0,32)||'New Chat', msgs:[]};
+    S.chats.unshift(chat); S.activeId = chat.id;
+  }
+  if(chat.title==='New conversation' && text) chat.title = text.slice(0,32);
+
+  const ts = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  let disp = text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  if(S.atts.length) disp += `<br><small style="color:var(--t3)">📎 ${S.atts.map(a=>a.name).join(', ')}</small>`;
+  chat.msgs.push({r:'user', t:disp, ts, model:''});
+
+  // ── Local command pre-processor (bypasses API for file ops) ──
+  if(window.electronAPI && !S.atts.length && await tryLocalCmd(text, chat)){renderCL();renderMsgs();save();return;}
+
+  // Build attachments context for the API
+  let fileContext = '';
+  const atts = [...S.atts];
+  S.atts = [];
+  document.getElementById('atchList').innerHTML = '';
+  for(const att of atts){
+    if(att.content !== null){
+      fileContext += `\n\n--- File: ${att.name} ---\n${att.content}\n--- End ${att.name} ---`;
+    }
+  }
+
+  renderCL(); renderMsgs();
+
+  const el = document.getElementById('msgs');
+  const tid = 'tp'+Date.now();
+  el.innerHTML += `<div class="mai" id="${tid}"><div class="ava"><svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#gt)"/><defs><linearGradient id="gt" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7c6fff"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient></defs><path d="M19 5L10 18h7l-3 9 11-13h-7l2-9z" fill="white" opacity=".95"/></svg></div><div class="bub"><div class="blbl">Code Light</div><div class="typ"><span></span><span></span><span></span></div></div></div>`;
+  el.scrollTop = el.scrollHeight;
+
+  const history = chat.msgs.slice(0,-1);
+  const hasTools = !!window.electronAPI;
+  const sysPrompt = buildSysPrompt(hasTools);
+  const apiMsgs = [{role:'system', content:sysPrompt}];
+  for(const m of history){
+    apiMsgs.push({role: m.r==='user'?'user':'assistant', content: m.t.replace(/<[^>]+>/g,'')});
+  }
+  let userContent = text;
+  if(fileContext) userContent += '\n\nAttached files:' + fileContext;
+  apiMsgs.push({role:'user', content: userContent});
+  const truncated = truncateMsgs(apiMsgs, S.cfg.model);
+  const promptTok = estimateTokens(JSON.stringify(truncated));
+
+  // ── Attempt streaming ──
+  let streamOk = false, streamBubble = null;
+  const tryStream = async (maxTok) => {
+    const provider = getProvider(S.cfg.provider, S.cfg);
+    if(typeof provider.streamChat !== 'function') return false;
+    try {
+      const opts = maxTok ? { maxTokens: maxTok } : {};
+      const stream = provider.streamChat(S.cfg.model, truncated, hasTools ? getTools() : [], opts);
+      streamBubble = 'ai'+Date.now();
+      document.getElementById(tid)?.remove();
+      el.innerHTML += `<div class="mai" id="${streamBubble}"><div class="ava"><svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#g${Date.now()}s)"/><defs><linearGradient id="g${Date.now()}s" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7c6fff"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient></defs><path d="M19 5L10 18h7l-3 9 11-13h-7l2-9z" fill="white" opacity=".95"/></svg></div><div class="bub"><div class="blbl">Code Light <span class="mtag">${S.cfg.modelName||S.cfg.model}</span></div><div class="btxt" id="${streamBubble}t"></div></div></div>`;
+      el.scrollTop = el.scrollHeight;
+      let aiText = '';
+      for await(const evt of stream){
+        if(evt.type==='token'){aiText+=evt.text;const b=document.getElementById(streamBubble+'t');if(b){b.innerHTML=renderAI(aiText)+'<span class="cur"></span>';el.scrollTop=el.scrollHeight;}}
+        else if(evt.type==='done'){
+          if(evt.finish_reason==='tool_calls'&&evt.tool_calls?.length){
+            document.getElementById(streamBubble)?.remove();streamBubble=null;return false;
+          }
+          streamOk=true;
+          const blockResults = window.electronAPI ? await executeBlocksFromText(aiText) : [];
+          let html=''; const allResults=[...blockResults];
+          for(const tr of allResults){
+            if(tr.type==='cmd'){html+=`<div class="exec-block"><div class="exec-head"><i class="ti ti-terminal-2"></i> $ ${tr.cmd.replace(/</g,'&lt;')}</div><pre class="exec-out">${(tr.result||'').replace(/</g,'&lt;')}</pre></div>`;}
+            else if(tr.type==='read'){html+=`<div class="exec-block"><div class="exec-head"><i class="ti ti-file-text"></i> ${tr.path||''}</div><pre class="exec-out">${(tr.result||'').replace(/</g,'&lt;')}</pre></div>`;}
+            else if(tr.type==='write'){html+=`<div class="exec-block"><div class="exec-head"><i class="ti ti-file-check"></i> Written: ${tr.path||''}</div></div>`;}
+          }
+          let content = renderAI(aiText);
+          if(content)html=content+(html?'<br><br>':'');
+          if(!allResults.length&&window.electronAPI){const scraped=await scrapeCommandsFromText(aiText);for(const s of scraped){html+=`<div class="exec-block"><div class="exec-head"><i class="ti ti-terminal-2"></i> ${s.cmd}</div><pre class="exec-out">${s.result.replace(/</g,'&lt;')}</pre></div>`;}}
+          const rts=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+          const compTok=estimateTokens(aiText);
+          chat.msgs.push({r:'ai',t:html||'(no response)',ts:rts,model:S.cfg.modelName||S.cfg.model});
+          chat.promptTokens=(chat.promptTokens||0)+promptTok;chat.completionTokens=(chat.completionTokens||0)+compTok;
+          S.tokens+=promptTok+compTok;updateUsage();save();renderCL();renderMsgs();return true;
+        }
+      }
+    } catch(e){
+      document.getElementById(streamBubble)?.remove();streamBubble=null;
+      const m=e.message||'';
+      if(m.includes('can only afford')){const x=m.match(/can only afford (\d+)/);if(x) return tryStream(Math.max(parseInt(x[1])-20,50));}
+      return false;
+    }
+  };
+  if(await tryStream()) return;
+  // Clean up streaming bubble but keep typing indicator during rotation
+  if(streamBubble){document.getElementById(streamBubble)?.remove();streamBubble=null;}
+  // Show a thinking indicator in the typing area while rotating through models
+  const tipEl = document.getElementById(tid);
+  if(tipEl) tipEl.querySelector('.blbl').textContent = 'Code Light •••';
+  try {
+      const reply = await callAPI(truncated);
+      document.getElementById(tid)?.remove();
+      const aiText = reply.content||'';
+      const blockResults = window.electronAPI ? await executeBlocksFromText(aiText) : [];
+      let html = '';
+      const allResults = [...(reply.toolResults||[]), ...blockResults];
+      for(const tr of allResults){
+        if(tr.name==='execute_command'||tr.type==='cmd'){
+          html += `<div class="exec-block"><div class="exec-head"><i class="ti ti-terminal-2"></i> $ ${(tr.args?.command||tr.cmd).replace(/</g,'&lt;')}</div><pre class="exec-out">${(tr.result||'').replace(/</g,'&lt;')}</pre></div>`;
+        } else if(tr.name==='read_file'||tr.type==='read'){
+          html += `<div class="exec-block"><div class="exec-head"><i class="ti ti-file-text"></i> ${tr.args?.path||tr.path||''}</div><pre class="exec-out">${(tr.result||'').replace(/</g,'&lt;')}</pre></div>`;
+        } else if(tr.name==='write_file'||tr.type==='write'){
+          html += `<div class="exec-block"><div class="exec-head"><i class="ti ti-file-check"></i> Written: ${tr.args?.path||tr.path||''}</div></div>`;
+        } else if(tr.name==='web_search'){
+          const raw = typeof tr.result==='string'?JSON.parse(tr.result||'[]'):(tr.result||[]);
+          const results = Array.isArray(raw) ? raw : (raw.results||[]);
+          let sr = `<div class="exec-block"><div class="exec-head"><i class="ti ti-search"></i> Search: ${(tr.args?.query||'').replace(/</g,'&lt;')}</div>`;
+          if(results.length) for(const r of results.slice(0,5)) sr += `<div style="padding:4px 0;border-bottom:1px solid var(--b2)"><a href="${(r.url||'').replace(/</g,'&lt;')}" target="_blank" style="color:var(--accent);text-decoration:none;font-weight:500">${(r.title||'').replace(/</g,'&lt;')}</a><div style="font-size:11px;color:var(--t3)">${(r.content||r.snippet||'').replace(/</g,'&lt;').slice(0,200)}</div></div>`;
+          else sr += `<div style="padding:8px;color:var(--t3);font-size:12px">${raw.error||'No results'}</div>`;
+          html += sr + '</div>';
+        }
+      }
+      let content = renderAI(aiText);
+      if(content) html = content+(html?'<br><br>':'');
+      if(!allResults.length && window.electronAPI){
+        const scraped = await scrapeCommandsFromText(aiText);
+        for(const s of scraped){html+=`<div class="exec-block"><div class="exec-head"><i class="ti ti-terminal-2"></i> ${s.cmd}</div><pre class="exec-out">${s.result.replace(/</g,'&lt;')}</pre></div>`;}
+      }
+      const rts = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      const compTok = estimateTokens(aiText);
+      chat.msgs.push({r:'ai', t:html||'(no response)', ts:rts, model:S.cfg.modelName||S.cfg.model});
+      chat.promptTokens = (chat.promptTokens||0) + promptTok;
+      chat.completionTokens = (chat.completionTokens||0) + compTok;
+      S.tokens += promptTok + compTok;
+      updateUsage();
+      save(); renderCL(); renderMsgs();
+      return;
+    } catch(e){
+      document.getElementById(tid)?.remove();
+      const rts = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      chat.msgs.push({r:'ai', t:`<span style="color:var(--danger)">⚠️ ${e.message}</span>`, ts:rts, model:''});
+    }
+    save(); renderCL(); renderMsgs();
+  
+}
+
+// Parse and execute ```cmd/```write/```read blocks from AI text
+async function executeBlocksFromText(text){
+  const results = [];
+  const cmdRe = /```cmd\n?([\s\S]*?)```/g;
+  let m;
+  while((m = cmdRe.exec(text)) !== null){
+    const cmd = m[1].trim();
+    if(!cmd) continue;
+    const result = await window.electronAPI.execCommand(cmd) || '';
+    results.push({type:'cmd', cmd, result});
+  }
+  const writeRe = /```write\s+(\S+)\n?([\s\S]*?)```/g;
+  while((m = writeRe.exec(text)) !== null){
+    const path = m[1].trim();
+    const content = m[2].trimEnd();
+    await window.electronAPI.writeFile(path, content);
+    results.push({type:'write', path, result:'Written'});
+  }
+  const readRe = /```read\s+(\S+)```/g;
+  while((m = readRe.exec(text)) !== null){
+    const path = m[1].trim();
+    const content = await window.electronAPI.readFile(path);
+    results.push({type:'read', path, result:content||'(file not found)'});
+  }
+  return results;
+}
+
+// Scrape plain-text commands from AI refusal text (last resort)
+async function scrapeCommandsFromText(text){
+  // Look for command-like patterns in instructions
+  const candidates = [];
+  const lines = text.split('\n');
+  for(const line of lines){
+    const trimmed = line.trim();
+    // Match: "type filename" or "dir" or "wc -l filename"
+    if(/^(type|dir|ls|cat|wc|find|python|node|npm|git|cd|copy|move|del|echo|powershell|cmd)\s/i.test(trimmed)){
+      candidates.push(trimmed.replace(/['"]/g,''));
+    }
+  }
+  const results = [];
+  for(const cmd of candidates){
+    const result = await window.electronAPI.execCommand(cmd);
+    if(result && result.length > 5){
+      results.push({cmd, result});
+      break; // just do the first one
+    }
+  }
+  return results;
+}
+
+function hKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function aResize(t){t.style.height='auto';t.style.height=Math.min(t.scrollHeight,120)+'px';}
+
+// ══════════════════════════════════════════
+// MESSAGES RENDER
+// ══════════════════════════════════════════
+function renderAI(t){return t.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/`{3}([\s\S]*?)`{3}/g,'<pre>$1</pre>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');}
+function renderMsgs(){
+  const chat = S.chats.find(c=>c.id===S.activeId);
+  const el = document.getElementById('msgs');
+  if(!chat||!chat.msgs.length){
+    el.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--t3);"><div style="font-size:48px;margin-bottom:12px;">⚡</div><div style="font-size:16px;font-weight:500;color:var(--t2);margin-bottom:6px;">Code Light is ready</div><div style="font-size:13px;">Add an API key to start chatting with any model.</div><br><button onclick="showApiModal()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;cursor:pointer;font-family:var(--font);">➕ Add API Key</button></div>`;
+    return;
+  }
+  el.innerHTML = chat.msgs.map((m,i) => m.r==='user' ?
+    `<div class="mu">${m.t}<div class="mt">${m.ts} <i class="ti ti-checks" style="font-size:12px;"></i></div></div>` :
+    `<div class="mai"><div class="ava"><svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#gm${i})"/><defs><linearGradient id="gm${i}" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#7c6fff"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient></defs><path d="M19 5L10 18h7l-3 9 11-13h-7l2-9z" fill="white" opacity=".95"/></svg></div><div class="bub"><div class="blbl">Code Light ${m.model?`<span class="mtag">${m.model}</span>`:''}</div><div class="btxt">${m.t}</div><div class="bacts"><button class="ab" title="Copy" onclick="cpMsg(${i})"><i class="ti ti-copy"></i></button><button class="ab" title="Like" id="lk${i}" onclick="likeMsg(${i})"><i class="ti ti-thumb-up"></i></button><button class="ab" title="Dislike" id="dk${i}" onclick="disMsg(${i})"><i class="ti ti-thumb-down"></i></button><button class="ab" title="Read aloud" onclick="readAloud(${i})"><i class="ti ti-volume"></i></button><span class="at">${m.ts}</span></div></div></div>`
+  ).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function cpMsg(i){const c=S.chats.find(x=>x.id===S.activeId);navigator.clipboard.writeText(c.msgs[i].t.replace(/<[^>]+>/g,'')).then(()=>toast('Copied!'));}
+function likeMsg(i){const b=document.getElementById('lk'+i);b.classList.toggle('liked');document.getElementById('dk'+i).classList.remove('disliked');toast(b.classList.contains('liked')?'👍 Liked':'Like removed');}
+function disMsg(i){const b=document.getElementById('dk'+i);b.classList.toggle('disliked');document.getElementById('lk'+i).classList.remove('liked');toast(b.classList.contains('disliked')?'👎 Disliked':'Dislike removed');}
+function readAloud(i){
+  const c=S.chats.find(x=>x.id===S.activeId);
+  if(!c)return;
+  const txt=c.msgs[i].t.replace(/<[^>]+>/g,'');
+  if('speechSynthesis' in window){window.speechSynthesis.cancel();window.speechSynthesis.speak(new SpeechSynthesisUtterance(txt));toast('🔊 Reading…');}
+  else toast('Speech not supported');
+}
+function copyConvo(){const c=S.chats.find(x=>x.id===S.activeId);if(!c)return;const txt=c.msgs.map(m=>(m.r==='user'?'You: ':'AI: ')+m.t.replace(/<[^>]+>/g,'')).join('\n\n');if(window.electronAPI){window.electronAPI.copy(txt);toast('Copied!');}else navigator.clipboard.writeText(txt).then(()=>toast('Copied!'));}
+async function exportConvo(){
+  const c=S.chats.find(x=>x.id===S.activeId);if(!c)return;
+  const content=c.msgs.map(m=>(m.r==='user'?'You: ':'AI: ')+m.t.replace(/<[^>]+>/g,'')).join('\n\n');
+  if(window.electronAPI){const fp=await window.electronAPI.showSaveDialog([{name:'Text',extensions:['txt']}]);if(fp){await window.electronAPI.writeFile(fp,content);toast('Exported!');}}
+  else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/plain'}));a.download=(c.title||'chat')+'.txt';a.click();toast('Exported');}
+}
+
+// ══════════════════════════════════════════
+// CHAT LIST
+// ══════════════════════════════════════════
+function renderCL(){
+  document.getElementById('clList').innerHTML = S.chats.map(c=>`
+    <div class="ci${c.id===S.activeId?' act':''}" onclick="loadChat(${c.id})">
+      <i class="ti ti-message"></i>
+      <span class="ci-t">${c.title}</span>
+      <button class="mb" onclick="openCtx(event,${c.id})"><i class="ti ti-dots-vertical"></i></button>
+    </div>`).join('');
+}
+function loadChat(id){S.activeId=id;renderCL();renderMsgs();navGo(document.querySelector('[data-p="chat"]'));}
+function newChat(){const c={id:Date.now(),title:'New conversation',msgs:[]};S.chats.unshift(c);S.activeId=c.id;save();renderCL();renderMsgs();navGo(document.querySelector('[data-p="chat"]'));document.getElementById('mi').focus();toast('New conversation');}
+
+// ══════════════════════════════════════════
+// CONTEXT MENU
+// ══════════════════════════════════════════
+function openCtx(e,id){
+  e.stopPropagation();S.ctxTarget=id;
+  const m=document.getElementById('ctx');
+  const wr=document.getElementById('win').getBoundingClientRect();
+  m.style.top=(e.clientY-wr.top)+'px';m.style.left=(e.clientX-wr.left-170)+'px';
+  m.classList.add('on');
+}
+function ctxDo(a){
+  document.getElementById('ctx').classList.remove('on');
+  if(a==='delete'){if(confirm('Delete this chat?')){S.chats=S.chats.filter(c=>c.id!==S.ctxTarget);if(S.activeId===S.ctxTarget)S.activeId=S.chats[0]?.id||null;save();renderCL();renderMsgs();toast('Deleted');}}
+  else if(a==='archive'){toast('Archived (saved locally)');}
+  else if(a==='share'){const c=S.chats.find(x=>x.id===S.ctxTarget);if(c)navigator.clipboard.writeText(c.msgs.map(m=>(m.r==='user'?'You: ':'AI: ')+m.t.replace(/<[^>]+>/g,'')).join('\n\n')).then(()=>toast('Chat copied!'));}
+}
+
+// ══════════════════════════════════════════
+// MODEL DROPDOWN
+// ══════════════════════════════════════════
+function toggleMDD(e){
+  e.stopPropagation();
+  if(!S.cfg.key){showApiModal();return;}
+  const dd=document.getElementById('mDD');
+  const wr=document.getElementById('win').getBoundingClientRect();
+  const r=document.getElementById('mpick').getBoundingClientRect();
+  dd.style.top=(r.bottom-wr.top+4)+'px';dd.style.left=(r.left-wr.left)+'px';
+  dd.classList.toggle('on');
+}
+
+// ══════════════════════════════════════════
+// API MODAL
+// ══════════════════════════════════════════
+function showApiModal(){
+  // pre-select current provider
+  if(S.cfg.provider){
+    const cards = document.querySelectorAll('.prov-card');
+    const provOrder = ['openrouter','openai','anthropic','custom','pekpik','gemini','groq','keyless','ollamafreeapi'];
+    cards.forEach((c,i)=>c.classList.toggle('sel',provOrder[i]===S.cfg.provider));
+    S.selProv = S.cfg.provider;
+    const cfg = PROVIDERS[S.cfg.provider];
+    document.getElementById('keyLabel').textContent = cfg.label;
+    document.getElementById('keyInp').placeholder = cfg.ph;
+    document.getElementById('keyHint').textContent = cfg.hint;
+    document.getElementById('urlRow').style.display = S.cfg.provider==='custom'?'':'none';
+    document.getElementById('keyInp').value = S.cfg.key||'';
+    document.getElementById('urlInp').value = S.cfg.url||cfg.url;
+  }
+  showMo('apiOv');
+}
+
+// ══════════════════════════════════════════
+// NAV / PAGES
+// ══════════════════════════════════════════
+function navGo(el){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  el.classList.add('on');
+  const p=el.dataset.p;
+  document.querySelectorAll('.pg').forEach(pg=>{pg.classList.remove('on');pg.style.display='none';});
+  const tgt=document.getElementById(p+'Pg');
+  tgt.style.display='flex'; tgt.classList.add('on');
+  document.getElementById('inpArea').style.display=p==='chat'?'':'none';
+  if(p!=='chat')({explore:renderExplorePg,library:renderLibPg,templates:renderTplPg,settings:renderSettingsPg}[p]||function(){})();
+}
+
+function renderExplorePg(){
+  const ais=[{e:'🟠',n:'Claude',p:'Anthropic',d:'Thoughtful, safe AI assistant.',u:'https://claude.ai'},{e:'🟢',n:'ChatGPT',p:'OpenAI',d:'World\'s most popular AI.',u:'https://chat.openai.com'},{e:'🔵',n:'Gemini',p:'Google',d:'Multimodal AI with web access.',u:'https://gemini.google.com'},{e:'🔷',n:'DeepSeek',p:'DeepSeek AI',d:'Powerful open-source model.',u:'https://chat.deepseek.com'},{e:'🟣',n:'Mistral',p:'Mistral AI',d:'Fast European LLM.',u:'https://chat.mistral.ai'},{e:'🔴',n:'Perplexity',p:'Perplexity',d:'AI search with real-time web.',u:'https://perplexity.ai'},{e:'⚡',n:'Grok',p:'xAI',d:'Witty AI with X access.',u:'https://grok.x.ai'},{e:'🪟',n:'Copilot',p:'Microsoft',d:'AI across Office & web.',u:'https://copilot.microsoft.com'},{e:'🔀',n:'OpenRouter',p:'OpenRouter',d:'100+ models via one API.',u:'https://openrouter.ai'}];
+  document.getElementById('explorePg').innerHTML=`<div class="pg-title">Explore AI Models</div><div class="pg-sub">Click to open any AI in your browser.</div><div class="xgrid">${ais.map(a=>`<div class="xcard"><div class="xch"><div class="xlo">${a.e}</div><div><div class="xn">${a.n}</div><div class="xp">${a.p}</div></div></div><div class="xd">${a.d}</div><a class="xl" href="${a.u}" target="_blank"><i class="ti ti-external-link"></i> Open ${a.n}</a></div>`).join('')}</div>`;
+}
+function renderLibPg(){
+  const libs=[{i:'ti-brand-python',n:'Python stdlib',d:'os, sys, json, asyncio, pathlib…'},{i:'ti-chart-bar',n:'NumPy / Pandas',d:'Numerical & data manipulation.'},{i:'ti-brain',n:'TensorFlow / PyTorch',d:'Deep learning frameworks.'},{i:'ti-server',n:'FastAPI / Flask',d:'Python REST API frameworks.'},{i:'ti-brand-javascript',n:'Node.js APIs',d:'fs, path, child_process, http…'},{i:'ti-brand-react',n:'React / Next.js',d:'Frontend & SSR framework.'},{i:'ti-database',n:'SQLite / PostgreSQL',d:'Relational databases.'},{i:'ti-brand-docker',n:'Docker SDK',d:'Containerised apps.'},{i:'ti-api',n:'OpenAI SDK',d:'GPT-4, embeddings, DALL-E.'},{i:'ti-leaf',n:'Anthropic SDK',d:'Claude models SDK.'},{i:'ti-globe',n:'Requests / Axios',d:'HTTP clients.'},{i:'ti-brand-git',n:'GitPython',d:'Git repo interaction.'}];
+  document.getElementById('libraryPg').innerHTML=`<div class="pg-title">Library</div><div class="pg-sub">Libraries & SDKs Code Light can work with.</div><div class="grid">${libs.map(l=>`<div class="card" onclick="toast('${l.n} ready!')"><div class="ci2"><i class="ti ${l.i}"></i></div><div class="ct">${l.n}</div><div class="cd">${l.d}</div></div>`).join('')}</div>`;
+}
+function renderTplPg(){
+  const ts=[{e:'🐍',n:'Python Script'},{e:'⚛️',n:'React Component'},{e:'🌐',n:'REST API'},{e:'🤖',n:'AI Chatbot'},{e:'📊',n:'Data Analysis'},{e:'🐳',n:'Dockerfile'},{e:'📝',n:'README'},{e:'🧪',n:'Unit Tests'},{e:'🔐',n:'Auth Flow'},{e:'🗄️',n:'DB Schema'},{e:'🚀',n:'CI/CD Pipeline'},{e:'🔑',n:'API Client'}];
+  document.getElementById('templatesPg').innerHTML=`<div class="pg-title">Templates</div><div class="pg-sub">Click to scaffold in chat.</div><div class="grid">${ts.map(t=>`<div class="card" onclick="useTpl('${t.n}')"><div class="ci2">${t.e}</div><div class="ct">${t.n}</div></div>`).join('')}</div>`;
+}
+function useTpl(n){navGo(document.querySelector('[data-p="chat"]'));document.getElementById('mi').value=`Generate a ${n} template for me`;sendMsg();}
+
+function renderKeyGroup(p){
+  const names={openrouter:'OpenRouter',openai:'OpenAI',anthropic:'Anthropic',gemini:'Gemini',groq:'Groq',ollamafreeapi:'OllamaFree'};
+  const name=names[p]||p; const keys=S.provKeys[p];
+  const arr=Array.isArray(keys)?keys:[];
+  const rows=[]; const max=10;
+  for(let i=0;i<max;i++){
+    const v=arr[i]||'';
+    rows.push(`<input class="mk-inp" id="mk_${p}_${i}" type="password" value="${v}" placeholder="${name} key #${i+1}" autocomplete="off" ${i===0?'':'style="margin-top:4px;"'}/>`);
+  }
+  return `<div style="margin-top:8px;"><div style="font-size:13px;font-weight:500;color:var(--t2);margin-bottom:4px;">${name}</div>
+    ${rows.join('')}
+    <button class="bs" onclick="saveMultiKeys('${p}')" style="margin-top:6px;font-size:12px;">Save ${name} Keys</button></div>`;
+}
+
+function saveMultiKeys(p){
+  const arr=[];
+  for(let i=0;i<10;i++){
+    const v=document.getElementById(`mk_${p}_${i}`).value.trim();
+    if(v && !arr.includes(v)) arr.push(v);
+  }
+  S.provKeys[p]=arr;
+  ss('cl_provKeys',JSON.stringify(S.provKeys));
+  toast(`Saved ${arr.length} key${arr.length!==1?'s':''} for ${p}`);
+}
+function renderSettingsPg(){
+  const dk=document.documentElement.classList.contains('dark');
+  const provName={openrouter:'OpenRouter',openai:'OpenAI',anthropic:'Anthropic',custom:'Custom',pekpik:'Pekpik'}[S.cfg.provider]||'—';
+  document.getElementById('settingsPg').innerHTML=`
+  <div class="pg-title">Settings</div><div class="pg-sub">Manage your workspace.</div>
+  <div class="sg"><div class="sgt">API Configuration</div>
+    <div class="sr"><div><div class="sl">Provider</div><div class="sd">${provName}</div></div><div class="sa"><button onclick="showApiModal()">Change</button></div></div>
+    <div class="sr"><div><div class="sl">API Key</div><div class="sd">${S.cfg.key?'●●●●●●●●●●'+S.cfg.key.slice(-4):'Not configured'}</div></div><div class="sa"><button onclick="showApiModal()">Edit</button></div></div>
+    <div class="sr"><div><div class="sl">Active Model</div><div class="sd">${S.cfg.modelName||'None selected'}</div></div><div class="sa"><button onclick="showApiModal()">Switch</button></div></div>
+    <div class="sr"><div><div class="sl">Fallback Model</div><div class="sd">${S.cfg.fallbackModel||'None — tool calls fail silently'}</div></div><div class="sa"><button onclick="pickFallback()">${S.cfg.fallbackModel?'Change':'Set'}</button></div></div>
+  </div>
+  <div class="sg"><div class="sgt">Multi-Key Rotation</div>
+    <div class="sr" style="flex-wrap:wrap;padding-bottom:12px;"><div style="width:100%;font-size:12px;color:var(--t3);margin-bottom:8px;">Add up to 10 API keys per provider. When one hits a rate/credit limit, the next is tried automatically.</div></div>
+    ${['openrouter','openai','anthropic','gemini','groq'].map(p=>renderKeyGroup(p)).join('')}
+  </div>
+  <div class="sg"><div class="sgt">Appearance</div>
+    <div class="sr"><div><div class="sl">Dark Mode</div></div><div class="sa"><button class="tog${dk?' on':''}" onclick="togTheme(this)"></button></div></div>
+  </div>
+  <div class="sg"><div class="sgt">Chat History</div>
+    <div class="sr"><div><div class="sl">Stored Chats</div><div class="sd">${S.chats.length} conversations</div></div><div class="sa"><button onclick="clearChats()">Clear All</button></div></div>
+    <div class="sr"><div><div class="sl">Export</div><div class="sd">Download all chats as JSON</div></div><div class="sa"><button onclick="exportAll()">Export</button></div></div>
+  </div>
+  <div class="sg"><div class="sgt">Usage</div>
+    <div class="sr"><div><div class="sl">Session Tokens</div><div class="sd">${S.tokens.toLocaleString()} tokens ${(()=>{const c=estimateCost(S.cfg.model,S.tokens,0);return c?`(~$${c.total})`:'';})()}</div></div><div class="sa"><button onclick="S.tokens=0;updateUsage();renderSettingsPg();toast('Reset')">Reset</button></div></div>
+  </div>`;
+}
+function pickFallback(){const m=prompt('Enter fallback model ID (e.g. gpt-4o-mini, claude-sonnet-4-6).\nLeave empty to disable fallback.',S.cfg.fallbackModel||'');if(m!==null){S.cfg.fallbackModel=m||'';ss('cl_cfg',JSON.stringify(S.cfg));renderSettingsPg();toast(m?'Fallback set: '+m:'Fallback disabled');}}
+function togTheme(b){b.classList.toggle('on');document.documentElement.classList.toggle('dark');S.theme=document.documentElement.classList.contains('dark')?'dark':'light';ss('cl_theme',S.theme);}
+function clearChats(){if(confirm('Delete all chats?')){S.chats=[];S.activeId=null;save();renderCL();renderMsgs();renderSettingsPg();toast('Cleared');}}
+async function exportAll(){
+  const content=JSON.stringify(S.chats,null,2);
+  if(window.electronAPI){const fp=await window.electronAPI.showSaveDialog([{name:'JSON',extensions:['json']}]);if(fp){await window.electronAPI.writeFile(fp,content);toast('Exported!');}}
+  else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'application/json'}));a.download='codelight_chats.json';a.click();}
+}
+
+// ══════════════════════════════════════════
+// WINDOW CONTROLS
+// ══════════════════════════════════════════
+function wClose(){if(window.electronAPI){window.electronAPI.closeWindow();}else if(confirm('Close Code Light?')){document.getElementById('win').style.opacity='0';}}
+function wMin(){if(window.electronAPI){window.electronAPI.minimizeWindow();}else{const w=document.getElementById('win');w.style.transform='scale(0.05) translateY(700px)';w.style.opacity='0';setTimeout(()=>{w.style.transition='none';w.style.transform='';w.style.opacity='';setTimeout(()=>w.style.transition='',50);},1800);toast('Minimised');}}
+function wMax(){if(window.electronAPI&&window.electronAPI.maximizeWindow){window.electronAPI.maximizeWindow();}else{S.winMax=!S.winMax;const w=document.getElementById('win');if(S.winMax){w.style.width='100vw';w.style.height='100vh';w.style.borderRadius='0';}else{w.style.width='1120px';w.style.height='690px';w.style.borderRadius='14px';}}}
+
+// ══════════════════════════════════════════
+// SIDEBAR / FILE / TODO
+// ══════════════════════════════════════════
+function toggleSB(){document.getElementById('sb').classList.toggle('off');}
+function toggleFP(){document.getElementById('fp').classList.toggle('on');if(document.getElementById('fp').classList.contains('on'))renderFP();}
+async function renderFP(){
+  const el=document.getElementById('fpList');
+  if(!window.electronAPI){el.innerHTML='<div style="padding:12px;font-size:12px;color:var(--t3)">File pane requires the Electron app.</div>';return;}
+  const res=await window.electronAPI.listDir(S.fpPath);
+  if(res.error){el.innerHTML=`<div style="padding:12px;font-size:12px;color:var(--danger)">${res.error}</div>`;return;}
+  S.fpPath=res.path; S.fpData=res;
+  let html='';
+  if(res.parent) html+=`<div class="fpi" onclick="navFP(-1)"><i class="ti ti-folder-up"></i> ..</div>`;
+  res.entries.forEach((e,i)=>{
+    if(e.isDir) html+=`<div class="fpi" onclick="navFP(${i})"><i class="ti ti-folder"></i> ${e.name}</div>`;
+    else{const sz=e.size>1024?Math.round(e.size/1024)+'KB':e.size+'B';html+=`<div class="fpi" onclick="viewFP(${i})"><i class="ti ti-file-code"></i> ${e.name} <span style="float:right;font-size:11px;color:var(--t3)">${sz}</span></div>`;}
+  });
+  el.innerHTML=html;
+  document.getElementById('fpPathLabel').textContent=S.fpPath||'Files';
+}
+function navFP(i){
+  if(i===-1) S.fpPath=S.fpData.parent;
+  else{const sep=S.fpData.path.includes('\\')?'\\':'/';S.fpPath=S.fpData.path+sep+S.fpData.entries[i].name;}
+  renderFP();
+}
+async function viewFP(i){
+  const e=S.fpData.entries[i];const sep=S.fpData.path.includes('\\')?'\\':'/';const fullPath=S.fpData.path+sep+e.name;
+  const content=await window.electronAPI.readFile(fullPath);
+  if(content===null){toast('Could not read file');return;}
+  S.atts.push({name:e.name,size:e.size,path:fullPath,content});
+  document.getElementById('atchList').innerHTML+=`<div class="ach">📄 ${e.name} (${content.length}B) <button onclick="rmAtch(${S.atts.length-1})">×</button></div>`;
+  toast('Attached: '+e.name);
+}
+function toggleTodo(){document.getElementById('todoPan').classList.toggle('on');}
+function renderTodos(){document.getElementById('tList').innerHTML=S.todos.length?S.todos.map((t,i)=>`<div class="tpi"><div class="tcb${t.d?' on':''}" onclick="togTodo(${i})"></div><span class="tt${t.d?' on':''}">${t.t}</span><button class="td" onclick="delTodo(${i})"><i class="ti ti-trash"></i></button></div>`).join(''):`<div style="text-align:center;padding:20px;font-size:12px;color:var(--t3);">No tasks yet.</div>`;}
+function addTodo(){const inp=document.getElementById('tIn');const txt=inp.value.trim();if(!txt)return;S.todos.push({t:txt,d:false});inp.value='';ss('cl_todos',JSON.stringify(S.todos));renderTodos();}
+function togTodo(i){S.todos[i].d=!S.todos[i].d;ss('cl_todos',JSON.stringify(S.todos));renderTodos();}
+function delTodo(i){S.todos.splice(i,1);ss('cl_todos',JSON.stringify(S.todos));renderTodos();}
+
+// ══════════════════════════════════════════
+// FILE UPLOAD / WEB SEARCH / COMMAND
+// ══════════════════════════════════════════
+function trigUp(){document.getElementById('fup').click();}
+async function hFiles(inp){
+  const files=[...inp.files];
+  S.atts=[];
+  for(const f of files){
+    const att={name:f.name,size:f.size,path:f.path||null,content:null};
+    if(window.electronAPI && f.path) try{att.content=await window.electronAPI.readFile(f.path);}catch(e){att.content=null;}
+    S.atts.push(att);
+  }
+  inp.value='';
+  const html=S.atts.length?S.atts.map((f,i)=>`<div class="ach">${f.path?'📄':'📎'} ${f.name} ${f.content!==null?'('+f.content.length+'B)':''} <button onclick="rmAtch(${i})">×</button></div>`).join(''):'';
+  document.getElementById('atchList').innerHTML=html;
+}
+function rmAtch(i){S.atts.splice(i,1);document.getElementById('atchList').innerHTML=S.atts.length?`<div class="atch-list">${S.atts.map((f,j)=>`<div class="ach">${f.path?'📄':'📎'} ${f.name}${f.content!==null?' ('+f.content.length+'B)':''} <button onclick="rmAtch(${j})">×</button></div>`).join('')}</div>`:'';}
+function webSrch(){const q=document.getElementById('mi').value.trim();if(!q){toast('Type a query first');return;}if(window.electronAPI){document.getElementById('mi').value='Search the web for: '+q;sendMsg();}else window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`,`_blank`);}
+async function runCmd(){perm('run a terminal command',async ok=>{if(!ok)return;const cmd=prompt('Command to execute:');if(!cmd)return;const c=S.chats.find(x=>x.id===S.activeId);if(!c)return;const ts=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});let output='(no output)';if(window.electronAPI){try{output=await window.electronAPI.execCommand(cmd);}catch(e){output='Error: '+e.message;}}c.msgs.push({r:'ai',t:`<div class="exec-block"><div class="exec-head"><i class="ti ti-terminal-2"></i> $ ${cmd.replace(/</g,'&lt;')}</div><pre class="exec-out">${output.replace(/</g,'&lt;')}</pre></div>`,ts,model:'terminal'});save();renderMsgs();});}
+
+// ══════════════════════════════════════════
+// PERMISSIONS
+// ══════════════════════════════════════════
+function perm(desc,cb){S.pendPerm=cb||null;document.getElementById('permT').textContent='Permission Required';document.getElementById('permM').textContent=`Code Light is requesting to ${desc}. Allow this action?`;document.getElementById('permOv').classList.add('on');}
+function permYes(){document.getElementById('permOv').classList.remove('on');if(S.pendPerm)S.pendPerm(true);S.pendPerm=null;toast('Allowed');}
+function permNo(){document.getElementById('permOv').classList.remove('on');if(S.pendPerm)S.pendPerm(false);S.pendPerm=null;toast('Denied');}
+
+// ══════════════════════════════════════════
+// GITHUB
+// ══════════════════════════════════════════
+function doPush(){const r=document.getElementById('ghRepo').value.trim();if(!r){toast('Enter a repo URL');return;}perm(`push to ${r}`,ok=>{if(ok){hideMo('ghOv');toast('Pushed to GitHub ✓');}});}
+
+// ══════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════
+function showMo(id){document.getElementById(id).classList.add('on');}
+function hideMo(id){document.getElementById(id).classList.remove('on');}
+
+// ══════════════════════════════════════════
+// USAGE / SAVE / TOAST
+// ══════════════════════════════════════════
+function updateUsage(){const p=Math.min((S.tokens/100000)*100,100);document.getElementById('uFill').style.width=p+'%';document.getElementById('uTxt').textContent=S.tokens.toLocaleString();ss('cl_tokens',S.tokens);}
+function save(){ss('cl_chats',JSON.stringify(S.chats));}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2200);}
+
+// ══════════════════════════════════════════
+// CLICK OUTSIDE
+// ══════════════════════════════════════════
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#mDD')&&!e.target.closest('#mpick'))document.getElementById('mDD').classList.remove('on');
+  if(!e.target.closest('#ctx')&&!e.target.closest('.mb'))document.getElementById('ctx').classList.remove('on');
+});
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();toggleSearch();}
+});
+let srchIdx=-1,srchMatches=[];
+function toggleSearch(){
+  const bar=document.getElementById('srchBar');const on=bar.style.display!=='none';
+  bar.style.display=on?'none':'flex';const inp=document.getElementById('srchInp');
+  if(!on){inp.value='';inp.focus();searchMsgs();}else{document.getElementById('mi').focus();}
+}
+function searchMsgs(){
+  const q=document.getElementById('srchInp').value.trim().toLowerCase();
+  const chat=S.chats.find(c=>c.id===S.activeId);srchMatches=[];srchIdx=-1;
+  document.querySelectorAll('.mu,.mai').forEach(el=>{el.classList.remove('hasm','curm');});
+  if(!q||!chat)return;
+  document.querySelectorAll('.mu,.mai').forEach(el=>{
+    const txt=el.textContent.toLowerCase();
+    if(txt.includes(q)){srchMatches.push(el);el.classList.add('hasm');}
+  });
+  document.getElementById('srchInfo').textContent=srchMatches.length?`${srchMatches.length} match${srchMatches.length>1?'es':''}`:'';
+  if(srchMatches.length){srchIdx=0;srchMatches[0].classList.add('curm');srchMatches[0].scrollIntoView({block:'center'});}
+}
+function searchNext(){if(!srchMatches.length)return;
+  srchMatches[srchIdx]?.classList.remove('curm');
+  srchIdx=(srchIdx+1)%srchMatches.length;
+  srchMatches[srchIdx].classList.add('curm');srchMatches[srchIdx].scrollIntoView({block:'center'});
+}
+function searchPrev(){if(!srchMatches.length)return;
+  srchMatches[srchIdx]?.classList.remove('curm');
+  srchIdx=(srchIdx-1+srchMatches.length)%srchMatches.length;
+  srchMatches[srchIdx].classList.add('curm');srchMatches[srchIdx].scrollIntoView({block:'center'});
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+try{
+renderCL();
+renderMsgs();
+renderTodos();
+updateUsage();
+updateApiBadge();
+if(S.cfg.key) populateModelDD();
+if(S.cfg.model) document.getElementById('mName').textContent = S.cfg.modelName||S.cfg.model;
+document.querySelectorAll('.pg').forEach(p=>{p.style.display='none';});
+document.getElementById('chatPg').style.display='flex';
+}catch(e){showError(e.message);}
+</script>
+</body>
+</html>

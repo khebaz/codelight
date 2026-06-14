@@ -1,0 +1,52 @@
+{
+  "name": "code-light",
+  "version": "1.0.0",
+  "description": "Code Light — AI Chat Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:dev": "electron . --dev",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.codelight.app",
+    "productName": "Code Light",
+    "files": [
+      "main.js",
+      "preload.js",
+      "codelight.html"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": null
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^42.4.0",
+    "electron-builder": "^25.0.0"
+  }
+}
