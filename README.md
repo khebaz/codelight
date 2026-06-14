@@ -198,6 +198,18 @@ Users are responsible for reviewing all actions before execution. The authors ar
 
 ---
 
+## Contributing
+
+Code Light is open source and welcomes contributions, ideas, and feedback.
+
+- **Feature requests & bug reports**: Open a [GitHub Issue](https://github.com/khebaz/codelight/issues)
+- **Pull requests**: Fork the repo, make your changes, and submit a PR
+- **Questions**: Start a discussion in the GitHub Issues tab
+
+All contributions are reviewed and appreciated.
+
+---
+
 ## License
 
 MIT
