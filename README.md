@@ -27,6 +27,18 @@
 
 ---
 
+## Screenshots
+
+| Main Workspace | API Configuration | Settings |
+|---|---|---|
+| ![Screenshot 1](screenshots/Screenshot%20(7).png) | ![Screenshot 2](screenshots/Screenshot%20(8).png) | ![Screenshot 3](screenshots/Screenshot%20(9).png) |
+
+| Model Selection | File Explorer |
+|---|---|
+| ![Screenshot 4](screenshots/Screenshot%20(10).png) | ![Screenshot 5](screenshots/Screenshot%20(11).png) |
+
+---
+
 ## Requirements
 
 - Windows 10 or 11
